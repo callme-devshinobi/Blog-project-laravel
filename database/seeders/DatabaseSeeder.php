@@ -3,29 +3,27 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
-        $this->call(
+        // 1. The blog author
+        User::updateOrCreate(
+            ['email' => 'dennischiagozem@gmail.com'],
             [
-                BlogSeeder::class,
+                'name'         => 'Dennis Onwuegbu',
+                'display_name' => 'Dennis Onwuegbu',
+                'password'     => Hash::make('password'),
             ]
         );
+
+        // 2. Then categories, then posts (posts need both to exist)
+        $this->call([
+            CategorySeeder::class,
+            PostSeeder::class,
+        ]);
     }
 }

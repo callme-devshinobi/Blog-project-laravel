@@ -1,53 +1,70 @@
 <x-layout>
-  
-    <!-- Hero -->
-    <section class="page-hero">
-      <p class="eyebrow">Explore topics</p>
-      <h1>Browse by category.</h1>
-      <p>Every article on DevNotes lives in one of these categories. Pick a topic and start reading — from Laravel deep-dives to developer habits.</p>
-    </section>
-  
-    <!-- Floating search -->
-    <div class="search-bar">
-      <span class="search-icon">⌕</span>
-      <input type="search" placeholder="Search categories or topics…" aria-label="Search categories" />
+
+  <!-- Hero -->
+  <section class="page-hero">
+    <p class="eyebrow">Explore topics</p>
+    <h1>Browse by category.</h1>
+    <p>Every article on DevNotes lives in one of these categories. Pick a topic and start reading — from Laravel deep-dives to developer habits.</p>
+  </section>
+
+  <!-- Floating search -->
+  <div class="search-bar">
+    <span class="search-icon">⌕</span>
+    <input type="search" placeholder="Search categories or topics…" aria-label="Search categories" />
+  </div>
+
+  <!-- Category grid -->
+  <section class="section">
+
+    @php
+      // Pairs of [background, text colour]; the cards take turns using them
+      $colors = [
+        ['#ede9fe', '#6c63ff'],
+        ['#dbeafe', '#2563eb'],
+        ['#fef3c7', '#d97706'],
+        ['#dcfce7', '#16a34a'],
+        ['#fee2e2', '#dc2626'],
+        ['#e0f2fe', '#0284c7'],
+      ];
+    @endphp
+
+    <div class="grid">
+      @foreach ($categories as $category)
+        @php $color = $colors[$loop->index % count($colors)]; @endphp
+
+        <a href="/show/{{ $category['slug'] }}" class="cat-card">
+          <div class="cat-head">
+            <div class="cat-icon" style="background:{{ $color[0] }};color:{{ $color[1] }};">
+              {{ Str::substr($category['name'], 0, 1) }}
+            </div>
+            <span class="count">{{ $category['posts_count'] }} {{ Str::plural('post', $category['posts_count']) }}</span>
+          </div>
+          <h3>{{ $category['name'] }}</h3>
+          <p>{{ $category['description'] }}</p>
+          <div class="cat-foot">
+            <span class="tag-line">Browse <b>{{ $category['name'] }}</b></span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      @endforeach
     </div>
-  
-    <!-- Category grid -->
-    <section class="section">
-      <div class="grid">
-  @foreach ( $categories as $category)
-  <a href="show/{{ $category['name']  }}" class="cat-card">
-    <div class="cat-head">
-      <div class="cat-icon" style="background:#fee2e2;color:#dc2626;"> {{ $category['icon']  }}</div>
-      <span class="count"> {{ $category['post_count']  }} post(s)</span>
-    </div>
-    <h3>{{$category['name']}}</h3>
-    <p>{{$category['description']}}</p>
-    <div class="cat-foot">
-      <span class="tag-line">Latest: <b>Laravel 12 guide</b></span>
-      <span class="arrow">→</span>
-    </div>
-  </a>
-  @endforeach
+
+    <!-- Featured strip -->
+    <div class="featured">
+      <div>
+        <h2>Not sure where to start?</h2>
+        <p>Start with the most popular series — the step-by-step Laravel 12 guide, or the full blog build from scratch. Both are beginner-friendly.</p>
       </div>
-  
-      <!-- Featured strip -->
-      <div class="featured">
-        <div>
-          <h2>Not sure where to start?</h2>
-          <p>Start with the most popular series — the step-by-step Laravel 12 guide, or the full blog build from scratch. Both are beginner-friendly.</p>
-        </div>
-        <div class="actions">
-          @if ($recommendedPost)
-            <a href="/post/{{ $recommendedPost['id'] }}" class="btn-subscribe">
-              Start with: {{ Str::limit($recommendedPost['title'], 28) }}
-            </a>
-          @endif
-        
-          <a href="/" class="btn-ghost">View all posts →</a>
-        </div>
+      <div class="actions">
+        @if ($recommendedPost)
+          <a href="/post/{{ $recommendedPost['id'] }}" class="btn-subscribe">
+            Start with: {{ Str::limit($recommendedPost['title'], 28) }}
+          </a>
+        @endif
+
+        <a href="/posts" class="btn-ghost">View all posts →</a>
       </div>
-    </section>
-  
-  </x-layout>
+    </div>
+  </section>
+
+</x-layout>

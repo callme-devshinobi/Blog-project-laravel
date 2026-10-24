@@ -5,15 +5,15 @@
     <div class="post-hero-inner">
       <div class="breadcrumb">
         <a href="/">Home</a><span class="sep">/</span>
-        <a href="/show/{{ rawurlencode($post['category']) }}">{{ $post['category'] }}</a><span class="sep">/</span>
+        <a href="/show/{{ $post->category->slug }}">{{ $post->category->name }}</a><span class="sep">/</span>
         <span class="current">{{ $post['title'] }}</span>
       </div>
-      <span class="post-badge">{{ $post['category'] }}</span>
+      <span class="post-badge">{{ $post->category->name }}</span>
       <h1>{{ $post['title'] }}</h1>
       <div class="post-meta">
         <div class="author">
-          <div class="avatar">{{ $post['author_initials'] }}</div>
-          <div><b>{{ $post['author'] }}</b><span>Writer & Developer</span></div>
+          <div class="avatar">{{ $post->user->initials }}</div>
+          <div><b>{{ $post->user->author_name }}</b><span>Writer & Developer</span></div>
         </div>
         <span class="sep">·</span>
         <span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -31,10 +31,10 @@
     <article>
       <div class="article-card">
         <div class="cover">
-          <img src="{{ $post['image'] }}"
-               alt="{{ $post['image_alt'] }}"
+          <img src="{{ $post->image_url }}"
+               alt="{{ $post['image_alt'] ?? $post['title'] }}"
                style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;">
-          <span class="cover-badge">{{ $post['title'] }}</span>
+          <span class="cover-badge">{{ $post->category->name }}</span>
         </div>
 
         <div class="article-body">
@@ -51,13 +51,11 @@
         </div>
 
         <!-- Author box -->
-        <div class="author-box">
-          <div class="avatar">{{ $post['author_initials'] }}</div>
-          <div>
-            <small>WRITTEN BY</small>
-            <h4>{{ $post['author'] }}</h4>
-          </div>
-        </div>
+        <div class="avatar">{{ $post->user->initials }}</div>
+<div>
+  <small>WRITTEN BY</small>
+  <h4>{{ $post->user->author_name }}</h4>
+</div>
 
         <!-- Prev / Next -->
         <div class="post-nav">
@@ -82,9 +80,9 @@
     <aside class="sidebar">
       <x-sidebar_search></x-sidebar_search>
 
-      <x-sidebar_cat :current="$current" :categories="$categories" :posts="$posts" />
+      <x-sidebar_cat :current="$current" :categories="$categories" />
 
-      <x-sidebar_popular :posts="$posts" />
+      <x-sidebar_popular :posts="$popularPosts" />
     </aside>
 
   </div>

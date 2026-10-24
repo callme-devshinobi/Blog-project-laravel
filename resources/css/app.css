@@ -645,4 +645,109 @@
     .hero h1{ font-size:1.85rem; }
     .category-hero .container{ padding-top:48px; padding-bottom:48px; }
   }
+  /* ============================================================
+   17. ALL POSTS PAGE  (every rule is scoped under .all-posts so
+       nothing here can affect the other pages)
+============================================================ */
+
+/* Hero + floating search: keep the original spacing for this page */
+.all-posts .page-hero{ padding:72px 24px 100px; }
+.all-posts .search-bar{ margin-top:-32px; }
+
+/* ---------- Filter chips ---------- */
+.all-posts .filters{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:26px; }
+.all-posts .filter-chip{
+  display:inline-block;               /* chips are <a> links now */
+  background:var(--card); border:1px solid var(--border); color:var(--text-muted);
+  font-size:13.5px; font-weight:600; padding:8px 17px; border-radius:999px;
+  transition:all .2s;
+}
+.all-posts .filter-chip:hover{ border-color:var(--indigo); color:var(--indigo); }
+.all-posts .filter-chip.active{ background:var(--indigo); border-color:var(--indigo); color:#fff; }
+.all-posts .results-count{ margin-left:auto; font-size:13.5px; color:var(--text-muted); }
+.all-posts .results-count b{ color:var(--text); }
+
+/* ---------- Post grid (2 columns, overrides the 3-column .grid) ---------- */
+.all-posts .grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px; }
+@media (max-width: 640px){
+  .all-posts .grid{ grid-template-columns:1fr; }
+}
+
+.all-posts .post-card{
+  background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden;
+  display:flex; flex-direction:column;
+  transition:transform .2s, box-shadow .2s;
+}
+.all-posts .post-card:hover{ transform:translateY(-4px); box-shadow:0 20px 40px -20px rgba(17,24,39,.3); }
+
+.all-posts .thumb{
+  height:180px; position:relative; display:grid; place-items:center;
+  background:
+    radial-gradient(200px 200px at 75% 25%, rgba(108,99,255,.35), transparent 70%),
+    linear-gradient(135deg, #161b26, #0b0d12);
+}
+.all-posts .thumb .glyph{ font-size:44px; color:rgba(108,99,255,.55); font-weight:800; }
+.all-posts .thumb .cat-badge{
+  position:absolute; top:14px; left:14px; background:var(--indigo); color:#fff;
+  font-size:12px; font-weight:700; padding:5px 13px; border-radius:999px;
+}
+
+.all-posts .post-body{ padding:20px 22px 18px; display:flex; flex-direction:column; flex:1; }
+.all-posts .post-body h3{ font-size:17px; font-weight:800; line-height:1.35; margin-bottom:8px; }
+.all-posts .post-card:hover h3{ color:var(--indigo); }
+.all-posts .post-body p{ font-size:14px; color:var(--text-muted); margin-bottom:16px; flex:1; }
+
+/* The card's meta line. This overrides the dark hero ".post-meta" rule
+   from the single-post page, which would otherwise make it invisible. */
+.all-posts .post-card .post-meta{
+  display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+  margin-top:0; padding-top:14px; border-top:1px solid var(--bg-light);
+  font-size:12.5px; color:var(--text-muted);
+}
+.all-posts .post-card .post-meta .avatar-sm{
+  width:26px; height:26px; border-radius:50%;
+  background:linear-gradient(135deg, var(--indigo), var(--indigo-dark));
+  display:grid; place-items:center; color:#fff; font-size:11px; font-weight:700;
+}
+.all-posts .post-card .post-meta b{ color:var(--text); font-weight:600; }
+.all-posts .post-card .post-meta .dot{ color:var(--border); }
+
+/* ---------- Sidebar cards ---------- */
+.all-posts .side-card{
+  background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px;
+}
+.all-posts .side-card h3{ font-size:16.5px; font-weight:800; margin-bottom:16px; }
+
+.all-posts .side-search{ position:relative; }
+.all-posts .side-search input{
+  width:100%; padding:11px 38px 11px 16px; border:1px solid var(--border); border-radius:10px;
+  font-family:inherit; font-size:14px; background:var(--bg-light);
+}
+.all-posts .side-search input:focus{ outline:none; border-color:var(--indigo); box-shadow:0 0 0 3px rgba(108,99,255,.14); }
+.all-posts .side-search .s-icon{
+  position:absolute; right:13px; top:50%; transform:translateY(-50%);
+  color:var(--text-muted); font-size:15px;
+}
+
+.all-posts .cat-row{
+  display:flex; align-items:center; justify-content:space-between; padding:9px 0;
+  color:var(--text); font-size:14.5px; transition:color .2s;
+}
+.all-posts .cat-row:hover{ color:var(--indigo); }
+.all-posts .cat-row .n{ color:var(--text-muted); font-size:13.5px; }
+
+.all-posts .pop-item{ display:flex; gap:14px; padding:11px 0; align-items:center; }
+.all-posts .pop-item + .pop-item{ border-top:1px solid var(--bg-light); }
+.all-posts .pop-num{ font-size:20px; font-weight:800; color:var(--indigo); width:20px; flex-shrink:0; }
+.all-posts .pop-thumb{
+  width:52px; height:52px; border-radius:10px; flex-shrink:0;
+  background:linear-gradient(135deg, #161b26, #0b0d12);
+  display:grid; place-items:center; font-size:19px; color:var(--indigo);
+}
+.all-posts .pop-item h4{ font-size:13.5px; font-weight:700; color:var(--text); line-height:1.4; }
+.all-posts .pop-item > span > span{ font-size:12px; color:var(--text-muted); }
+.all-posts .thumb img{
+  position:absolute; inset:0;
+  width:100%; height:100%; object-fit:cover;
+}
   

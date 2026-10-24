@@ -7,7 +7,7 @@
       <li>
         <a href="/post/{{ $p_posts['id'] }}">
           <span class="rank">{{ $index + 1 }}</span>
-          <img src="{{ $p_posts['image'] }}" alt="{{ $p_posts['image_alt'] }}">
+          <img src="{{ $p_posts['image_url'] }}" alt="{{ $p_posts['image_alt'] }}">
           <span>
             <span class="p-title">{{ $p_posts['title'] }}</span>
             <span class="p-meta">

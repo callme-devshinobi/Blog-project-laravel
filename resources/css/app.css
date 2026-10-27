@@ -750,4 +750,257 @@
   position:absolute; inset:0;
   width:100%; height:100%; object-fit:cover;
 }
-  
+  /* ============================================
+   18. CREATE POST PAGE (every rule starts with .create-post)
+   ============================================ */
+.create-post {
+  --indigo-soft: #efeafe;
+  background: var(--bg-light);
+}
+
+/* ---------- Hero ---------- */
+.create-post .post-hero {
+  background:
+    radial-gradient(900px 400px at 15% 0%, rgba(108,92,231,0.18), transparent 60%),
+    radial-gradient(700px 350px at 90% 20%, rgba(72,52,212,0.12), transparent 60%),
+    var(--bg-dark);
+  color: #fff; padding: 56px 24px 52px;
+}
+.create-post .post-hero-inner { max-width: 1080px; margin: 0 auto; }
+.create-post .post-crumb { font-size: 13.5px; color: #8b93a1; margin-bottom: 18px; }
+.create-post .post-crumb a { color: #aeb6c2; text-decoration: none; }
+.create-post .post-crumb a:hover { color: #fff; }
+.create-post .post-crumb span { color: #4b5563; margin: 0 6px; }
+.create-post .post-crumb .current { color: var(--indigo); font-weight: 600; }
+.create-post .post-hero h1 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -0.02em; }
+.create-post .post-hero p { color: #aeb6c2; margin-top: 8px; font-size: 15.5px; }
+
+/* ---------- Layout (the <form> itself is the grid) ---------- */
+.create-post .post-layout {
+  max-width: 1080px; margin: 0 auto; padding: 40px 24px 72px;
+  display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;
+}
+@media (max-width: 900px) { .create-post .post-layout { grid-template-columns: 1fr; } }
+
+.create-post .card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 26px;
+}
+.create-post .card + .card { margin-top: 24px; }
+.create-post .card h2 {
+  font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-muted); margin-bottom: 20px;
+}
+
+/* ---------- Messages ---------- */
+.create-post .alert-success {
+  background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46;
+  padding: 14px 18px; border-radius: 10px; margin-bottom: 24px; font-size: 14.5px; font-weight: 600;
+}
+.create-post .error { color: #dc2626; font-size: 13px; margin-top: 6px; }
+
+/* ---------- Fields ---------- */
+.create-post .field { margin-bottom: 18px; }
+.create-post .field:last-child { margin-bottom: 0; }
+.create-post .field label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 7px; }
+.create-post .field label i { color: #dc2626; font-style: normal; }
+.create-post .hint { font-weight: 400; color: var(--text-muted); font-size: 12.5px; margin-top: 6px; }
+.create-post .field input[type="text"],
+.create-post .field select,
+.create-post .field textarea {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px;
+  font-family: inherit; font-size: 14.5px; color: var(--text); background: var(--bg-light);
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.create-post .field input[type="text"]:focus,
+.create-post .field select:focus,
+.create-post .field textarea:focus {
+  outline: none; border-color: var(--indigo); background: #fff;
+  box-shadow: 0 0 0 4px rgba(108,92,231,0.14);
+}
+.create-post .field textarea { min-height: 340px; resize: vertical; line-height: 1.7; }
+.create-post .field input.title-input {
+  font-size: 21px; font-weight: 700; letter-spacing: -0.01em; padding: 15px 16px;
+}
+
+/* ---------- Tags input ---------- */
+.create-post .tags-input {
+  display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; min-height: 50px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--bg-light);
+  cursor: text; transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.create-post .tags-input:focus-within {
+  border-color: var(--indigo); background: #fff; box-shadow: 0 0 0 4px rgba(108,92,231,0.14);
+}
+.create-post .tags-input input {
+  flex: 1; min-width: 120px; border: none; background: none; box-shadow: none;
+  padding: 6px 4px; font-size: 14px; font-family: inherit; outline: none;
+}
+.create-post .tag-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--indigo-soft); color: #4b3bbf; font-size: 13px; font-weight: 600;
+  padding: 6px 8px 6px 12px; border-radius: 999px;
+}
+.create-post .tag-pill button {
+  background: rgba(108,92,231,0.18); border: none; color: #4b3bbf; cursor: pointer;
+  width: 18px; height: 18px; border-radius: 50%; font-size: 11px; line-height: 1;
+  display: grid; place-items: center; transition: background .15s;
+}
+.create-post .tag-pill button:hover { background: rgba(108,92,231,0.35); }
+
+/* ---------- Cover upload ---------- */
+.create-post .dropzone {
+  display: block; border: 2px dashed var(--border); border-radius: 12px; padding: 34px 20px;
+  text-align: center; cursor: pointer; transition: border-color .2s, background .2s;
+  background: var(--bg-light);
+}
+.create-post .dropzone:hover { border-color: var(--indigo); background: var(--indigo-soft); }
+.create-post .dropzone .dz-icon {
+  width: 46px; height: 46px; margin: 0 auto 12px; border-radius: 12px;
+  background: var(--indigo-soft); color: var(--indigo);
+  display: grid; place-items: center; font-size: 20px;
+}
+.create-post .dropzone b { font-size: 14.5px; display: block; margin-bottom: 3px; }
+.create-post .dropzone small { font-size: 12.5px; color: var(--text-muted); }
+.create-post .dropzone input { display: none; }
+.create-post .preview-thumb {
+  height: 140px; border-radius: 10px; margin-top: 14px;
+  background: radial-gradient(160px 160px at 75% 25%, rgba(108,92,231,0.4), transparent 70%), linear-gradient(135deg, #161b26, #0b0d12);
+  background-size: cover; background-position: center;
+  display: grid; place-items: center; color: var(--indigo); font-size: 26px;
+}
+
+/* ---------- Status radios ---------- */
+.create-post .status-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.create-post .status-opt {
+  display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.create-post .status-opt:hover { border-color: rgba(108,92,231,0.5); }
+.create-post .status-opt input { margin-top: 3px; accent-color: var(--indigo); }
+.create-post .status-opt b { font-size: 14px; display: block; }
+.create-post .status-opt small { font-size: 12.5px; color: var(--text-muted); }
+
+/* ---------- Sidebar ---------- */
+.create-post .post-side { display: flex; flex-direction: column; gap: 24px; position: sticky; top: 88px; }
+.create-post .post-side .card + .card { margin-top: 0; } /* the gap above already spaces them */
+@media (max-width: 900px) { .create-post .post-side { position: static; } }
+.create-post .word-count { font-size: 13px; color: var(--text-muted); margin-top: 10px; }
+.create-post .word-count b { color: var(--text); }
+
+/* ---------- Buttons ---------- */
+.create-post .actions { display: flex; flex-direction: column; gap: 10px; }
+.create-post .btn {
+  display: block; width: 100%; padding: 13px; border-radius: 10px; font-family: inherit; font-weight: 700;
+  font-size: 14.5px; cursor: pointer; border: none; text-align: center; text-decoration: none;
+  transition: background .2s, transform .2s;
+}
+.create-post .btn-primary { background: var(--indigo); color: #fff; }
+.create-post .btn-primary:hover { background: #5a4bd1; transform: translateY(-1px); }
+.create-post .btn-danger { background: transparent; color: #dc2626; border: 1px solid #fecaca; }
+.create-post .btn-danger:hover { background: #fef2f2; }
+/* ============================================
+   19. DRAFTS PAGE (every rule starts with .drafts-page)
+   ============================================ */
+/* min-height pushes the footer to the bottom even when there are few drafts */
+.drafts-page { min-height: calc(100vh - 180px); background: var(--bg-light); padding-bottom: 60px; }
+
+.drafts-page .dr-head { max-width: 1080px; margin: 0 auto; padding: 40px 24px 0; }
+.drafts-page .dr-head h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+.drafts-page .dr-head p { color: var(--text-muted); margin-top: 6px; }
+
+.drafts-page .dr-layout {
+  max-width: 1080px; margin: 0 auto; padding: 28px 24px 0;
+  display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start;
+}
+@media (max-width: 900px) { .drafts-page .dr-layout { grid-template-columns: 1fr; } }
+
+/* Draft cards */
+.drafts-page .dr-card {
+  display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 22px 24px; margin-bottom: 16px;
+}
+.drafts-page .dr-card h2 { font-size: 18px; font-weight: 700; margin: 8px 0 4px; }
+.drafts-page .dr-badge {
+  display: inline-block; background: #efeafe; color: #4b3bbf;
+  font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+}
+.drafts-page .dr-excerpt { color: var(--text-muted); font-size: 14.5px; }
+.drafts-page .dr-meta { color: var(--text-muted); font-size: 13px; margin-top: 6px; }
+
+/* Buttons */
+.drafts-page .dr-btn {
+  display: inline-block; padding: 10px 18px; border-radius: 10px; cursor: pointer;
+  font-family: inherit; font-weight: 700; font-size: 14px; text-decoration: none; text-align: center;
+  background: transparent; color: var(--text); border: 1px solid var(--border);
+  transition: border-color .2s, color .2s, background .2s;
+}
+.drafts-page .dr-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+.drafts-page .dr-btn-primary { background: var(--indigo); color: #fff; border-color: var(--indigo); }
+.drafts-page .dr-btn-primary:hover { background: #5a4bd1; color: #fff; }
+
+/* Aside */
+.drafts-page .dr-aside { position: sticky; top: 88px; }
+.drafts-page .dr-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px;
+}
+.drafts-page .dr-box h3 {
+  font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-muted); margin-bottom: 14px;
+}
+.drafts-page .dr-box ul { list-style: none; margin: 0 0 18px; padding: 0; }
+.drafts-page .dr-box li button {
+  width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: 14.5px; color: var(--text);
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.drafts-page .dr-box li button:hover { color: var(--indigo); }
+.drafts-page .dr-none { color: var(--text-muted); font-size: 14px; }
+.drafts-page .dr-box .dr-btn { display: block; }
+
+/* Overlay */
+.drafts-page .dr-modal {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(11, 13, 18, 0.7); backdrop-filter: blur(3px);
+  align-items: center; justify-content: center; padding: 24px;
+}
+.drafts-page .dr-modal.open { display: flex; }
+.drafts-page .dr-modal-box {
+  position: relative; background: var(--card); border-radius: 16px;
+  width: 100%; max-width: 720px; max-height: 88vh; overflow-y: auto; padding: 28px;
+}
+.drafts-page .dr-close {
+  position: absolute; top: 14px; right: 14px; width: 34px; height: 34px;
+  border-radius: 50%; border: none; background: var(--bg-light); cursor: pointer; font-size: 14px;
+}
+.drafts-page .dr-close:hover { background: var(--border); }
+.drafts-page #drImg { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }
+.drafts-page #drTitle { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; margin: 6px 0 14px; }
+.drafts-page .dr-body p { line-height: 1.8; margin-bottom: 14px; }
+.drafts-page .dr-modal-actions {
+  display: flex; justify-content: flex-end; gap: 12px;
+  margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border);
+}
+.create-post a.btn.btn-outline,
+.create-post button.btn.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid #cbd2dd;
+}
+.create-post a.btn.btn-outline:hover,
+.create-post button.btn.btn-outline:hover {
+  border-color: var(--indigo);
+  color: var(--indigo);
+}
+.drafts-page .dr-actions { display: flex; flex-direction: column; gap: 10px; min-width: 100px; }
+.drafts-page .dr-actions form { margin: 0; }
+.drafts-page .dr-actions .dr-btn { width: 100%; }
+
+.drafts-page .dr-btn-danger { color: #dc2626; border-color: #fecaca; }
+.drafts-page .dr-btn-danger:hover { background: #fef2f2; color: #dc2626; border-color: #dc2626; }
+
+.drafts-page .dr-alert {
+  background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46;
+  padding: 14px 18px; border-radius: 10px; margin-bottom: 16px; font-size: 14.5px; font-weight: 600;
+}

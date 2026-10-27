@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Str;
 
 class Post extends Model
 {
@@ -33,12 +34,25 @@ class Post extends Model
         'published_at' => 'datetime',
     ];
     // $post->image_url  =>  the featured image, or a placeholder if there isn't one
-    protected function imageUrl(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->featured_image ?: 'https://picsum.photos/seed/' . $this->id . '/800/450',
-        );
-    }
+  // $post->image_url  =>  a full web address for the featured image
+protected function imageUrl(): Attribute
+{
+    return Attribute::make(
+        get: function () {
+            if (! $this->featured_image) {
+                return 'https://picsum.photos/seed/' . $this->id . '/800/450';   // placeholder
+            }
+
+            // The seeded posts store a full web address already
+            if (Str::startsWith($this->featured_image, ['http://', 'https://'])) {
+                return $this->featured_image;
+            }
+
+            // Uploaded files live in storage/app/public
+            return asset('storage/' . $this->featured_image);
+        },
+    );
+}
     // A post belongs to one category
     public function category(): BelongsTo
     {

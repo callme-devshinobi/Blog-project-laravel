@@ -36,6 +36,10 @@
         <a href="/categories" class="{{ request()->is('categories*') ? 'active' : '' }}">Categories</a>
         <a href="/about" class="{{ request()->is('about') ? 'active' : '' }}">About</a>
         <a href="/contact" class="{{ request()->is('contact') ? 'active' : '' }}">Contact</a>
+        @guest
+        <a href="{{ route('login') }}" class="nav-mobile-only">Log in</a>
+        <a href="{{ route('register') }}" class="nav-mobile-only nav-signup">Sign up</a>
+      @endguest
       </nav>
   
       <div class="header-actions">
@@ -49,7 +53,28 @@
             <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
           </svg>
         </button>
-        <a href="#" class="btn-subscribe">Subscribe</a>
+        @guest
+        <a href="{{ route('login') }}" class="header-link">Log in</a>
+        <a href="{{ route('register') }}" class="btn-subscribe header-signup">Sign up</a>
+      @endguest
+      
+      @auth
+        <details class="user-menu" id="userMenu">
+          <summary>Hi, <span class="user-name">{{ explode(' ', auth()->user()->name)[0] }}</span></summary>
+          <div class="user-dropdown">
+            <a href="{{ route('dashboard') }}">🏠 Dashboard</a>
+            <a href="{{ route('posts.create') }}">✏️ Write a post</a>
+            {{-- Profile and Settings pages come later: swap the # for real routes then --}}
+            <a href="#">👤 Profile</a>
+            <a href="#">⚙️ Settings</a>
+            <div class="ud-sep"></div>
+            <form action="{{ route('logout') }}" method="POST">
+              @csrf
+              <button type="submit" class="ud-logout">🚪 Log out</button>
+            </form>
+          </div>
+        </details>
+      @endauth
         <label for="nav-toggle" class="icon-btn hamburger" aria-label="Open menu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -92,7 +117,24 @@
   
     </div>
   </footer>
+  <script>
+    const userMenu  = document.getElementById('userMenu');
+    const navToggle = document.getElementById('nav-toggle');
   
+    if (userMenu) {
+      // click anywhere else closes the account menu
+      document.addEventListener('click', e => {
+        if (!userMenu.contains(e.target)) userMenu.removeAttribute('open');
+      });
+      // Esc closes it
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') userMenu.removeAttribute('open');
+      });
+      // opening the account menu closes the hamburger menu, and the other way round
+      userMenu.addEventListener('toggle', () => { if (userMenu.open) navToggle.checked = false; });
+      navToggle.addEventListener('change', () => { if (navToggle.checked) userMenu.removeAttribute('open'); });
+    }
+  </script>
   </body>
   </html>
   

@@ -179,7 +179,7 @@ public function store(Request $request)
     // 7. Create the post
     $post = Post::create([
         // TEMPORARY: the logged-in user, or the first user if nobody is logged in
-        'user_id'        => auth()->id() ?? User::first()->id,
+        'user_id' => auth()->id(),
         'category_id'    => $validated['category_id'],
         'title'          => $validated['title'],
         'slug'           => $slug,
@@ -202,17 +202,29 @@ public function store(Request $request)
 }
 public function drafts()
 {
-    $drafts = Post::where('status', 'draft')
+    $drafts = auth()->user()->posts()
+        ->where('status', 'draft')
         ->with('category')
         ->latest()
         ->get();
 
     return view('drafts', ['drafts' => $drafts]);
 }
+public function dashboard()
+{
+    $user = auth()->user();
+
+    return view('dashboard', [
+        'publishedCount' => $user->posts()->published()->count(),
+        'draftCount'     => $user->posts()->where('status', 'draft')->count(),
+        'recentPosts'    => $user->posts()->with('category')->latest()->take(4)->get(),
+        'recentDrafts'   => $user->posts()->where('status', 'draft')->latest()->take(3)->get(),
+    ]);
+}
 public function publish($id)
 {
-    // only drafts can be published, anything else gives a 404
-    $post = Post::where('status', 'draft')->findOrFail($id);
+    // only MY drafts can be published
+    $post = auth()->user()->posts()->where('status', 'draft')->findOrFail($id);
 
     $post->update([
         'status'       => 'published',
@@ -223,7 +235,8 @@ public function publish($id)
 }
 public function published()
 {
-    $posts = Post::published()
+    $posts = auth()->user()->posts()
+        ->published()
         ->with('category')
         ->latest('published_at')
         ->paginate(10);
@@ -232,7 +245,7 @@ public function published()
 }
 public function destroy($id)
 {
-    $post = Post::findOrFail($id);
+    $post = auth()->user()->posts()->findOrFail($id);
 
     // also remove the uploaded cover image from storage (not for image links)
     if ($post->featured_image && ! Str::startsWith($post->featured_image, ['http://', 'https://'])) {

@@ -1,4 +1,4 @@
-<x-layout>
+<x-dashboard-layout>
   <div class="create-post">
   
     {{-- Hero --}}
@@ -222,4 +222,4 @@
     </script>
   
   </div>
-  </x-layout>
+</x-dashboard-layout>

@@ -1,4 +1,4 @@
-<x-layout>
+<x-dashboard-layout>
     <div class="drafts-page">
     
       <div class="dr-head">
@@ -52,4 +52,4 @@
     
       </div>
     </div>
-    </x-layout>
+  </x-dashboard-layout>

@@ -3,9 +3,15 @@
   <section class="hero">
     <div class="container hero-grid">
       <div class="hero-text">
-        <p class="hero-eyebrow">Welcome to DevNotes</p>
-        <h1>Thoughts, tutorials and real-world tech insights.</h1>
-        <p class="hero-desc">A blog for developers, creators and curious minds. Learn, build and grow — one post at a time.</p>
+        @if ($currentBlog)
+          <p class="hero-eyebrow">Welcome to {{ $currentBlog->title }}</p>
+          <h1>Thoughts, tutorials and ideas from {{ $currentBlog->user->name }}.</h1>
+          <p class="hero-desc">{{ $currentBlog->bio ?: 'A personal blog on DevNotes. Read, learn and explore, one post at a time.' }}</p>
+        @else
+          <p class="hero-eyebrow">Welcome to DevNotes</p>
+          <h1>Thoughts, tutorials and real-world tech insights.</h1>
+          <p class="hero-desc">A blog for developers, creators and curious minds. Learn, build and grow — one post at a time.</p>
+        @endif
       </div>
       <figure class="hero-media">
         <!-- Photo: Developer workspace with code — Pixabay -->
@@ -22,7 +28,7 @@
     <section class="posts">
       <div class="section-head">
         <h2>Latest Posts</h2>
-        <a href="/posts" class="view-all">
+        <a href="{{ $base }}/posts" class="view-all">
           View All Posts
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/>
@@ -41,7 +47,7 @@
               <span class="badge">{{ $post->category->name }}</span>
             </div>
             <div class="card-body">
-              <h3><a href="/post/{{ $post['id'] }}">{{ $post['title'] }}</a></h3>
+              <h3><a href="{{ $post->url }}">{{ $post['title'] }}</a></h3>
               <p class="excerpt">{{ $post['excerpt'] }}</p>
               <div class="card-meta">
                 <span class="author"><span class="avatar">{{ $post->user->initials }}</span> {{ $post->user->author_name }}</span>

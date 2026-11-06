@@ -20,7 +20,7 @@
   <header class="site-header">
     <div class="container header-inner">
   
-      <a href="/" class="logo">
+      <a href="{{ $base ?: '/' }}" class="logo">
         <span class="logo-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="8 6 3 12 8 18"/><polyline points="16 6 21 12 16 18"/>
@@ -32,10 +32,10 @@
       <input type="checkbox" id="nav-toggle" class="nav-toggle">
   
       <nav class="main-nav">
-        <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
-        <a href="/categories" class="{{ request()->is('categories*') ? 'active' : '' }}">Categories</a>
-        <a href="/about" class="{{ request()->is('about') ? 'active' : '' }}">About</a>
-        <a href="/contact" class="{{ request()->is('contact') ? 'active' : '' }}">Contact</a>
+        <a href="{{ $base ?: '/' }}" class="{{ request()->is('/') ? 'active' : '' }}">Home</a>
+        <a href="{{ $base }}/categories" class="{{ request()->is('categories*') ? 'active' : '' }}">Categories</a>
+        <a href="{{ $base }}/about" class="{{ request()->is('about') ? 'active' : '' }}">About</a>
+        <a href="{{ $base }}/contact" class="{{ request()->is('contact') ? 'active' : '' }}">Contact</a>
         @guest
         <a href="{{ route('login') }}" class="nav-mobile-only">Log in</a>
         <a href="{{ route('register') }}" class="nav-mobile-only nav-signup">Sign up</a>
@@ -89,7 +89,7 @@
   <footer class="site-footer">
     <div class="container footer-inner">
   
-      <a href="/" class="logo">
+      <a href="{{ $base ?: '/' }}" class="logo">
         <span class="logo-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="8 6 3 12 8 18"/><polyline points="16 6 21 12 16 18"/>

@@ -32,7 +32,7 @@
       @foreach ($categories as $category)
         @php $color = $colors[$loop->index % count($colors)]; @endphp
 
-        <a href="/show/{{ $category['slug'] }}" class="cat-card">
+        <a href="{{ $base }}/show/{{ $category['slug'] }}" class="cat-card">
           <div class="cat-head">
             <div class="cat-icon" style="background:{{ $color[0] }};color:{{ $color[1] }};">
               {{ Str::substr($category['name'], 0, 1) }}
@@ -62,7 +62,7 @@
           </a>
         @endif
 
-        <a href="/posts" class="btn-ghost">View all posts →</a>
+        <a href="{{ $base }}/posts" class="btn-ghost">View all posts →</a>
       </div>
     </div>
   </section>

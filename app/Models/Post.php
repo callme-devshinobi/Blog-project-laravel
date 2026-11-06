@@ -15,6 +15,7 @@ class Post extends Model
 
     protected $fillable = [
         'user_id',
+        'blog_id',
         'category_id',
         'title',
         'slug',
@@ -53,11 +54,22 @@ protected function imageUrl(): Attribute
         },
     );
 }
+protected $with = ['blog'];   // always load the blog, so links need no extra queries
+
+public function getUrlAttribute(): string
+{
+    return route('blog.post', [$this->blog, $this->slug]);
+}
     // A post belongs to one category
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function blog()
+{
+    return $this->belongsTo(Blog::class);
+}
 
     // A post belongs to one user (the author)
     public function user(): BelongsTo

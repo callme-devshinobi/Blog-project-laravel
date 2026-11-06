@@ -2,7 +2,7 @@
     <div class="auth-page">
       <div class="auth-card">
         <h1>Create your account</h1>
-        <p class="subtitle">Join DevNotes to comment, save articles and follow new posts.</p>
+        <p class="subtitle">Create your account and get your own blog on DevNotes.</p>
     
         <div class="perks">
           <span class="perk"><b>✓</b> Free forever</span>
@@ -43,6 +43,18 @@
                      value="{{ old('email') }}" class="@error('email') invalid @enderror" required>
             </div>
             <p class="field-error" id="emailError">Please enter a valid email address.</p>
+          </div>
+
+          <div class="field">
+            <label for="subdomain">Website name <i>*</i></label>
+            <div class="input-wrap">
+              <span class="lead-icon">🌐</span>
+              <input type="text" id="subdomain" name="subdomain" placeholder="htmlcoder"
+                     value="{{ old('subdomain') }}" class="@error('subdomain') invalid @enderror"
+                     minlength="3" maxlength="30" autocomplete="off" required>
+            </div>
+            <p class="hint">Your blog will live at <b>devnotes.com/@<span id="subPreview">{{ old('subdomain', 'yourname') }}</span></b></p>
+            <p class="field-error" id="subdomainError">Use 3-30 lowercase letters, numbers, or single hyphens (no spaces).</p>
           </div>
     
           <div class="field">
@@ -89,6 +101,16 @@
       </div>
     
       <script>
+        // Website name: force lowercase, strip bad characters, update the live preview
+const sub = document.getElementById('subdomain');
+const subPreview = document.getElementById('subPreview');
+const subRegex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+sub.addEventListener('input', () => {
+  sub.value = sub.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+  subPreview.textContent = sub.value || 'yourname';
+});
+
         // Show / hide password toggles
         document.querySelectorAll('.toggle-pass').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -141,6 +163,7 @@
           check(email, 'emailError', /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value));
           check(confirmBox, 'confirmError', confirmBox.value.length > 0 && confirmBox.value === pass.value);
           check(terms, 'termsError', terms.checked);
+          check(sub, 'subdomainError', sub.value.length >= 3 && sub.value.length <= 30 && subRegex.test(sub.value));
           if (!ok) e.preventDefault();   // stop only when something is wrong
         });
       </script>

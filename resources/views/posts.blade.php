@@ -9,7 +9,11 @@
   <section class="page-hero">
     <p class="eyebrow">The archive</p>
     <h1>All Posts</h1>
-    <p>Every tutorial, guide and insight published on DevNotes — newest first.</p>
+    @if ($currentBlog)
+      <p>Every post published on {{ $currentBlog->title }} — newest first.</p>
+    @else
+      <p>Every tutorial, guide and insight published on DevNotes — newest first.</p>
+    @endif
   </section>
 
   <!-- Floating search -->
@@ -25,10 +29,10 @@
     <div>
       <!-- Category filters -->
       <div class="filters" id="filters">
-        <a href="/posts" class="filter-chip active">All</a>
+        <a href="{{ $base }}/posts" class="filter-chip active">All</a>
 
         @foreach ($categories as $cat)
-          <a href="/show/{{ rawurlencode($cat['slug']) }}" class="filter-chip">{{ $cat['name'] }}</a>
+          <a href="{{ $base }}/show/{{ rawurlencode($cat['slug']) }}" class="filter-chip">{{ $cat['name'] }}</a>
         @endforeach
 
         <span class="results-count">
@@ -41,7 +45,7 @@
       <div class="grid">
 
         @forelse ($pagedPosts as $post)
-          <a href="/post/{{ $post['id'] }}" class="post-card">
+          <a href="{{ $post->url }}" class="post-card">
             <div class="thumb">
               <img src="{{ $post->image_url }}" alt="{{ $post['image_alt'] ?? $post['title'] }}" loading="lazy">
               <span class="cat-badge">{{ $post->category->name }}</span>
@@ -68,15 +72,14 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <!-- Search -->
-          <x-sidebar_search></x-sidebar_search>
-        
-      
- <!-- Categories -->
- <x-sidebar_cat :categories="$categories" />
-      
-<!-- Popular Posts -->
-<x-sidebar_popular :posts="$popularPosts" />
+      <!-- Search -->
+      <x-sidebar_search></x-sidebar_search>
+
+      <!-- Categories -->
+      <x-sidebar_cat :categories="$categories" />
+
+      <!-- Popular Posts -->
+      <x-sidebar_popular :posts="$popularPosts" />
     </aside>
 
   </div>

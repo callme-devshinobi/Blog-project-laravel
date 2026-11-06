@@ -4,8 +4,8 @@
   <section class="category-hero">
     <div class="container">
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a><span class="sep">/</span>
-        <a href="/categories">Categories</a><span class="sep">/</span>
+        <a href="{{ $base }}/">Home</a><span class="sep">/</span>
+        <a href="{{ $base }}/categories">Categories</a><span class="sep">/</span>
         <span class="current">{{ $category['name'] }}</span>
       </nav>
       <h1><span>#</span>{{ $category['name'] }}</h1>
@@ -16,12 +16,14 @@
         <span class="stat-chip accent">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           <!-- Total number of articles in this category (all pages) -->
-          {{ $post_lists->total() }} Articles
+          {{ $post_lists->total() }} Article(s)
         </span>
+        @if ($lastUpdated)
         <span class="stat-chip">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
-          Updated Sep 16, 2025
+          Updated {{ \Illuminate\Support\Carbon::parse($lastUpdated)->format('M j, Y') }}
         </span>
+      @endif
       </div>
     </div>
   </section>
@@ -74,4 +76,4 @@
     </aside>
   </main>
 
-</x-layout>
+</x-layout> 

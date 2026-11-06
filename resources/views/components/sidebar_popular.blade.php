@@ -5,7 +5,7 @@
   <ul class="popular-list">
     @foreach ($posts->take(4) as $index => $p_posts)
       <li>
-        <a href="/post/{{ $p_posts['id'] }}">
+        <a href="{{ $p_posts->url }}">
           <span class="rank">{{ $index + 1 }}</span>
           <img src="{{ $p_posts['image_url'] }}" alt="{{ $p_posts['image_alt'] }}">
           <span>

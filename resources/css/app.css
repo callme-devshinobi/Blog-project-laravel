@@ -1389,3 +1389,5 @@
   border-radius: 10px; padding: 12px 0; margin-top: 12px; border-bottom: none;
 }
 .main-nav .nav-signup:hover { background: var(--indigo-dark); color: #fff; }
+
+.hint { font-size: 13px; color: #6b7280; margin: 6px 0 0; }

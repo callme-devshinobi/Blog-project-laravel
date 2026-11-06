@@ -40,6 +40,11 @@ public function posts(): HasMany
     return $this->hasMany(Post::class);
 }
 
+public function blog()
+{
+    return $this->hasOne(Blog::class);
+}
+
 // $user->author_name  =>  display name if they set one, otherwise their name
 protected function authorName(): Attribute
 {

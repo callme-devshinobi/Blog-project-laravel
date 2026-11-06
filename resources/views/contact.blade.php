@@ -1,16 +1,46 @@
 <x-layout>
-  
+
+  @if ($currentBlog)
+
+    {{-- ================= Blogger's contact page: /@name/contact ================= --}}
+    <section class="page-hero">
+      <p class="eyebrow">Get in touch</p>
+      <h1>Contact {{ $currentBlog->user->name }}</h1>
+      <p>{{ $currentBlog->bio ?: 'Have a question or a topic suggestion? Reach out using the details below.' }}</p>
+    </section>
+
+    <section class="section">
+      <div class="info-stack" style="max-width: 640px; margin: 0 auto;">
+        <div class="info-card">
+          <div class="info-icon">✉</div>
+          <div>
+            <h3>Email</h3>
+            @if ($currentBlog->contact_email)
+              <p>The best way to reach {{ $currentBlog->user->name }}.<br>
+              <a href="mailto:{{ $currentBlog->contact_email }}">{{ $currentBlog->contact_email }}</a></p>
+            @else
+              <p>{{ $currentBlog->user->name }} hasn't added contact details yet.</p>
+            @endif
+          </div>
+        </div>
+      </div>
+    </section>
+
+  @else
+
+    {{-- ================= Main DevNotes contact page: /contact ================= --}}
+
     <!-- Hero -->
     <section class="page-hero">
       <p class="eyebrow">Get in touch</p>
       <h1>Let's talk.</h1>
       <p>Have a question, a topic suggestion, or a project idea? Drop a message below — I read every email and usually reply within 24 hours.</p>
     </section>
-  
+
     <!-- Contact -->
     <section class="section">
       <div class="contact-grid">
-  
+
         <!-- Info column -->
         <div class="info-stack">
           <div class="info-card">
@@ -36,7 +66,7 @@
               <p>I aim to reply within 24 hours on weekdays. For faster answers, check the FAQ below.</p>
             </div>
           </div>
-  
+
           <div class="social-panel">
             <h3>Find me elsewhere</h3>
             <p>I share snippets, behind-the-scenes and dev tips across these platforms.</p>
@@ -48,7 +78,7 @@
             </div>
           </div>
         </div>
-  
+
         <!-- Form column -->
         <div class="form-card">
           <h2>Send a message</h2>
@@ -84,10 +114,10 @@
             </div>
           </form>
         </div>
-  
+
       </div>
     </section>
-  
+
     <!-- FAQ -->
     <section class="section">
       <div class="faq">
@@ -113,6 +143,7 @@
         </details>
       </div>
     </section>
-  
-  </x-layout>
-  
+
+  @endif
+
+</x-layout>

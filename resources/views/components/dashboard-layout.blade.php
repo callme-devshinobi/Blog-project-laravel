@@ -12,6 +12,11 @@
             <a href="{{ route('posts.published') }}" class="db-link {{ request()->routeIs('posts.published') ? 'active' : '' }}"><span class="db-link-icon">📄</span> My Posts</a>
             <a href="{{ route('posts.drafts') }}" class="db-link {{ request()->routeIs('posts.drafts') ? 'active' : '' }}"><span class="db-link-icon">📝</span> Drafts</a>
             <a href="{{ route('posts.create') }}" class="db-link {{ request()->routeIs('posts.create') ? 'active' : '' }}"><span class="db-link-icon">✏️</span> New Post</a>
+            @if (auth()->user()->blog)
+  <a href="{{ route('blog.show', auth()->user()->blog) }}" class="db-link" target="_blank">
+    <span class="db-link-icon">🌐</span> My Blog
+  </a>
+@endif
           </nav>
 
           <div class="db-promo">

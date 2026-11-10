@@ -17,4 +17,8 @@ class Blog extends Model
     {
         return $this->hasMany(Post::class);
     }
+
+    protected $casts = [
+        'tech_stack' => 'array',
+    ];
 }

@@ -4,6 +4,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PublicBlogController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ProfileController;
+use App\Models\Blog;
+use Illuminate\Http\Request;
 
 // ---------- Main site ----------
 Route::get('/', [BlogController::class, 'home']);
@@ -52,4 +56,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{id}/publish', [BlogController::class, 'publish'])->name('posts.publish');
     Route::get('/posts/published', [BlogController::class, 'published'])->name('posts.published');
     Route::delete('/posts/{id}', [BlogController::class, 'destroy'])->name('posts.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/settings', [SettingsController::class, 'edit'])->name('settings');
+    Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
+    Route::delete('/settings/account', [SettingsController::class, 'destroy'])->name('settings.destroy');
+    Route::put('/settings/domain', [SettingsController::class, 'saveDomain'])->name('settings.domain');
+    Route::post('/settings/domain/verify', [SettingsController::class, 'verifyDomain'])->name('settings.domain.verify');
+    Route::delete('/settings/domain', [SettingsController::class, 'removeDomain'])->name('settings.domain.destroy');
+});
+Route::get('/internal/domain-check', function (Request $request) {
+    abort_unless($request->ip() === '127.0.0.1', 404);
+
+    $domain = strtolower($request->query('domain', ''));
+
+    $ok = in_array($domain, config('devnotes.main_hosts'), true)
+        || Blog::where('custom_domain', $domain)->whereNotNull('custom_domain_verified_at')->exists();
+
+    abort_unless($ok, 404);
+    return response('ok');
 });

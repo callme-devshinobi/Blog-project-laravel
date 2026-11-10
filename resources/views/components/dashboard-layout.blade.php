@@ -9,9 +9,11 @@
           <button type="button" class="db-close" id="dbClose" aria-label="Close menu">✕</button>
           <nav class="db-nav">
             <a href="{{ route('dashboard') }}" class="db-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"><span class="db-link-icon">🏠</span> Dashboard</a>
+            <a href="{{ route('profile') }}" class="db-link {{ request()->routeIs('profile') ? 'active' : '' }}"><span class="db-link-icon">👤</span> Profile</a>
             <a href="{{ route('posts.published') }}" class="db-link {{ request()->routeIs('posts.published') ? 'active' : '' }}"><span class="db-link-icon">📄</span> My Posts</a>
             <a href="{{ route('posts.drafts') }}" class="db-link {{ request()->routeIs('posts.drafts') ? 'active' : '' }}"><span class="db-link-icon">📝</span> Drafts</a>
             <a href="{{ route('posts.create') }}" class="db-link {{ request()->routeIs('posts.create') ? 'active' : '' }}"><span class="db-link-icon">✏️</span> New Post</a>
+            <a href="{{ route('settings') }}" class="db-link {{ request()->routeIs('settings') ? 'active' : '' }}"><span class="db-link-icon">⚙️</span> Settings</a>
             @if (auth()->user()->blog)
   <a href="{{ route('blog.show', auth()->user()->blog) }}" class="db-link" target="_blank">
     <span class="db-link-icon">🌐</span> My Blog
@@ -35,7 +37,7 @@
               <h1>{{ $title }}</h1>
             </div>
             <div class="db-user">
-              <span class="db-avatar">{{ auth()->user()->initials }}</span>
+              <span class="db-avatar" @if (auth()->user()->avatar_url) style="background:center/cover no-repeat url('{{ auth()->user()->avatar_url }}')" @endif>{{ auth()->user()->avatar_url ? '' : auth()->user()->initials }}</span>
               <b>{{ auth()->user()->name }}</b>
             </div>
           </div>

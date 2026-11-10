@@ -65,4 +65,11 @@ protected function initials(): Attribute
     );
 }
 
+public function getAvatarUrlAttribute(): ?string
+{
+    return $this->avatar
+        ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->avatar)
+        : null;
+}
+
 }

@@ -2,27 +2,84 @@
 
   @if ($currentBlog)
 
+    @php
+      $owner   = $currentBlog->user;
+      $phone   = $currentBlog->phone;
+      $socials = array_filter([
+        'GitHub'      => $currentBlog->github,
+        'LinkedIn'    => $currentBlog->linkedin,
+        'X / Twitter' => $currentBlog->twitter,
+      ]);
+      $hasContact = $currentBlog->contact_email || $phone || $socials;
+      $isOwner    = auth()->check() && auth()->id() === $currentBlog->user_id;
+    @endphp
+
     {{-- ================= Blogger's contact page: /@name/contact ================= --}}
     <section class="page-hero">
       <p class="eyebrow">Get in touch</p>
-      <h1>Contact {{ $currentBlog->user->name }}</h1>
+      <h1>Contact {{ $owner->name }}</h1>
       <p>{{ $currentBlog->bio ?: 'Have a question or a topic suggestion? Reach out using the details below.' }}</p>
     </section>
 
     <section class="section">
       <div class="info-stack" style="max-width: 640px; margin: 0 auto;">
-        <div class="info-card">
-          <div class="info-icon">✉</div>
-          <div>
-            <h3>Email</h3>
-            @if ($currentBlog->contact_email)
-              <p>The best way to reach {{ $currentBlog->user->name }}.<br>
+
+        @if ($currentBlog->contact_email)
+          <div class="info-card">
+            <div class="info-icon">✉</div>
+            <div>
+              <h3>Email</h3>
+              <p>The best way to reach {{ $owner->name }}.<br>
               <a href="mailto:{{ $currentBlog->contact_email }}">{{ $currentBlog->contact_email }}</a></p>
-            @else
-              <p>{{ $currentBlog->user->name }} hasn't added contact details yet.</p>
-            @endif
+            </div>
+          </div>
+        @endif
+
+        @if ($phone)
+          <div class="info-card">
+            <div class="info-icon">☎</div>
+            <div>
+              <h3>Phone</h3>
+              <p>Call or message {{ $owner->name }}.<br>
+              <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone) }}">{{ $phone }}</a></p>
+            </div>
+          </div>
+        @endif
+
+        @if ($socials)
+          <div class="social-panel">
+            <h3>Find me elsewhere</h3>
+            <p>You can also reach {{ $owner->name }} on these platforms.</p>
+            <div class="social-links">
+              @foreach ($socials as $label => $url)
+                <a href="{{ $url }}" target="_blank" rel="noopener noreferrer">{{ $label }}</a>
+              @endforeach
+            </div>
+          </div>
+        @endif
+
+        @unless ($hasContact)
+          <div class="info-card">
+            <div class="info-icon">✉</div>
+            <div>
+              <h3>No contact details yet</h3>
+              <p>{{ $owner->name }} hasn't added contact details yet, but you can read their latest posts in the meantime.</p>
+              @if ($isOwner)
+                <p><b>Only you can see this:</b> <a href="{{ route('profile') }}">add your contact details</a> in your profile.</p>
+              @endif
+            </div>
+          </div>
+        @endunless
+
+        <div class="info-card">
+          <div class="info-icon">✎</div>
+          <div>
+            <h3>Read the blog</h3>
+            <p>See what {{ $owner->name }} has been writing lately.<br>
+            <a href="{{ $base }}/posts">Browse all posts →</a></p>
           </div>
         </div>
+
       </div>
     </section>
 

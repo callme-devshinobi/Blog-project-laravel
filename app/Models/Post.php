@@ -58,6 +58,11 @@ protected $with = ['blog'];   // always load the blog, so links need no extra qu
 
 public function getUrlAttribute(): string
 {
+    // on the blogger's own custom domain, use a short relative link
+    if (app()->bound('customDomainBlog') && app('customDomainBlog')->id === $this->blog_id) {
+        return '/post/' . $this->slug;
+    }
+
     return route('blog.post', [$this->blog, $this->slug]);
 }
     // A post belongs to one category

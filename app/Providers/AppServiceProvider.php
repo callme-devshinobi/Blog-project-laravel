@@ -22,11 +22,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
-            $blog = request()->route('blog');
+            $onCustomDomain = app()->bound('customDomainBlog');
+            $blog = $onCustomDomain ? app('customDomainBlog') : request()->route('blog');
             $isBlog = $blog instanceof Blog;
         
             $view->with('currentBlog', $isBlog ? $blog : null);
-            $view->with('base', $isBlog ? '/@' . $blog->subdomain : '');
+            $view->with('base', ($isBlog && ! $onCustomDomain) ? '/@' . $blog->subdomain : '');
+         // empty on the main site; the main site's address on a custom domain
+            $view->with('mainUrl', $onCustomDomain ? rtrim(config('app.url'), '/') : '');
         });
     }
 }

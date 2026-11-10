@@ -135,9 +135,15 @@ class PublicBlogController extends Controller
     }
 
     public function about(Blog $blog)
-    {
-        return view('about', ['blog' => $blog]);
-    }
+{
+    return view('about', [
+        'blog'          => $blog,
+        'postCount'     => $blog->posts()->published()->count(),
+        'categoryCount' => $blog->posts()->published()->distinct()->count('category_id'),
+        'since'         => $blog->created_at->year,
+        'topics'        => Category::whereHas('posts', fn ($q) => $q->published()->where('blog_id', $blog->id))->orderBy('name')->pluck('name'),
+    ]);
+}
 
     public function contact(Blog $blog)
     {

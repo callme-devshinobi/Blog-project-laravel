@@ -1,60 +1,161 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DevNotes
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**A multi-blog publishing platform built with Laravel.** Anyone can sign up, get their own blog, write posts, and share it at their own address, or on a domain they own.
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?logo=php&logoColor=white)
+![License](https://img.shields.io/badge/license-Non--Commercial-blue)
+![Status](https://img.shields.io/badge/status-in%20development-orange)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<!-- Add screenshots here once you have them, for example:
+![Home page](docs/screenshots/home.png)
+![Dashboard](docs/screenshots/dashboard.png)
+-->
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## What is DevNotes?
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+DevNotes started as a personal blog and grew into a place where each writer gets a blog of their own. Every user has their own posts, profile, and public pages, and the main site brings all the blogs together in one directory.
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**For readers**
+- Home page, all-posts page, and category pages, on the main site and on every blog
+- Search across the whole site, or inside a single blog
+- Single post pages with next / previous navigation
+- Light and dark theme with a toggle (remembers your choice)
+- Fully responsive layout
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**For writers**
+- Sign up with a personal blog name and get a blog right away
+- Dashboard with post counts and recent activity
+- Write posts with a title, category, excerpt, cover image, image description and tags
+- Save drafts, preview them, then publish when ready
+- Manage only your own posts (publish, delete)
+- Profile page: photo, bio, tech stack, what and why you write, and contact details
+- Blog name that follows your profile (defaults to "Your Name's Blog")
+- Settings page: change password and delete your account
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+**Multi-blog**
+- Every blog lives at `/@blog-name`, with its own home, posts, categories, About and Contact pages
+- A directory of all blogs at `/blogs`
+- About and Contact pages are filled in from each writer's profile
+- Custom domains: a writer can connect a domain they own, verified with a DNS TXT record (so far only tested locally, see below)
 
-## Agentic Development
+## Built with
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- [Laravel](https://laravel.com) and PHP
+- Blade templates and components
+- SQLite (any database Laravel supports will work)
+- Vite and plain CSS (a single shared stylesheet with a design-token system)
+
+## Requirements
+
+- PHP 8.2 or newer
+- [Composer](https://getcomposer.org)
+- Node.js and npm
+- A local server such as [Laravel Herd](https://herd.laravel.com), or `php artisan serve`
+
+## Getting started
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clone the project
+git clone https://github.com/callme-devshinobi/Blog-project-laravel.git
+cd Blog-project-laravel
 
-php artisan boost:install
+# 2. Install PHP and JavaScript dependencies
+composer install
+npm install
+
+# 3. Create your environment file and app key
+cp .env.example .env
+php artisan key:generate
+
+# 4. Create the database tables
+php artisan migrate
+
+# 5. Make uploaded images (post covers, profile photos) reachable
+php artisan storage:link
+
+# 6. Start the front-end build, and the app
+npm run dev
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+On Windows PowerShell, use `copy .env.example .env` for step 3.
+
+Then open the address shown in the terminal (or `http://your-folder-name.test` if you use Herd), register an account, and write your first post.
+
+> Posts need a category. If your database has none yet, add a few before creating posts (for example with a seeder, or in `php artisan tinker`).
+
+### Environment settings
+
+Set these in your `.env`:
+
+| Variable | What it is for |
+|---|---|
+| `APP_URL` | The address of the app, for example `http://blogging.test` locally |
+| `MAIN_HOSTS` | Extra hostnames that belong to DevNotes itself (comma separated, optional) |
+| `DOMAIN_TARGET` | The hostname writers point their custom-domain CNAME at (defaults to your `APP_URL` host) |
+| `SERVER_IP` | The server's IP address, shown to writers who need an A record |
+
+Never commit your `.env` file. It holds your app key and database settings.
+
+## How custom domains work
+
+1. In **Settings**, a writer enters a domain they own, for example `myblog.com`.
+2. DevNotes shows the DNS records to add: a TXT record that proves ownership, and a CNAME or A record that sends visitors to the app.
+3. After the writer clicks **Verify**, a middleware recognises requests for that domain and shows their blog. Only public pages are served there, so login and the dashboard stay on the main site.
+
+**Trying it locally with Laravel Herd**
+
+```bash
+herd link demoblog          # serves the same app at demoblog.test
+```
+
+Add `demoblog.test` as the custom domain in Settings, then mark it verified in `php artisan tinker`, because real DNS lookups cannot succeed locally:
+
+```php
+App\Models\Blog::where('custom_domain', 'demoblog.test')->first()
+    ->forceFill(['custom_domain_verified_at' => now()])->save();
+```
+
+Real custom domains need the app to be deployed on a server with a public IP, and a way to issue HTTPS certificates on demand (for example Caddy's on-demand TLS).
+
+## Project structure (the parts that matter)
+
+```
+app/Http/Controllers/
+  BlogController.php        main site pages, dashboard, create / publish / delete posts
+  PublicBlogController.php  the public pages of each blog (/@name/...)
+  AuthController.php        sign up, log in, log out
+  ProfileController.php     profile page
+  SettingsController.php    password, account deletion, custom domain
+app/Http/Middleware/
+  ResolveCustomDomain.php   serves a blog on its custom domain
+app/Models/                 User, Blog, Post, Category
+resources/views/            Blade views; components/ holds the shared layouts
+resources/css/app.css       the single stylesheet (light and dark themes)
+routes/web.php              all routes
+```
+
+## Roadmap
+
+- [ ] Moderation: report button, and an admin switch to suspend a blog (which also disables its custom domain)
+- [ ] A contact form that actually sends messages
+- [ ] A seeder with sample categories and posts
+- [ ] Deployment guide, including HTTPS for custom domains
+- [ ] Comments and follow / subscribe
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+This is a personal project, and it is not currently open for contributions. If you find a bug, feel free to open an issue.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-[![License: CC BY-NC-SA 4.0](https://shields.io)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+This project is licensed under the DevNotes Non-Commercial License. You may view and use it for personal and educational purposes, but commercial use is not allowed. See [LICENSE.md](LICENSE.md) for the full terms.
 
+DevNotes is built on the [Laravel](https://laravel.com) framework, which is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Author
+
+Built by **Dennis Onwuegbu**.

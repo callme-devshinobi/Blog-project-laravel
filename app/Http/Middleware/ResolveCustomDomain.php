@@ -36,8 +36,7 @@ class ResolveCustomDomain
 
         // only the public pages are served on a custom domain
         // (logging in and the dashboard stay on the main site)
-        $isPublic = in_array($path, ['/', '/posts', '/categories', '/about', '/contact'], true)
-            || Str::startsWith($path, ['/show/', '/post/']);
+        $isPublic = in_array($path, ['/', '/posts', '/categories', '/about', '/contact', '/search'], true)|| Str::startsWith($path, ['/show/', '/post/']);
 
         abort_unless($isPublic, 404);
 

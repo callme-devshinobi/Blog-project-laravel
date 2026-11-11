@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class PublicBlogController extends Controller
 {
@@ -149,4 +150,23 @@ class PublicBlogController extends Controller
     {
         return view('contact', ['blog' => $blog]);
     }
+
+    // Search inside one blog  ( /@name/search )
+public function search(Blog $blog, Request $request)
+{
+    $q = mb_substr(trim((string) $request->query('q', '')), 0, 80);
+
+    $results = mb_strlen($q) >= 2
+        ? $blog->posts()->published()->search($q)
+              ->with(['category', 'user'])
+              ->latest('published_at')
+              ->paginate(10)
+              ->withQueryString()
+        : null;
+
+    return view('search', array_merge(
+        ['blog' => $blog, 'q' => $q, 'results' => $results],
+        $this->sidebarData($blog)
+    ));
+}
 }

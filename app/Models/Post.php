@@ -87,4 +87,29 @@ public function getUrlAttribute(): string
         return $query->where('status', 'published')
                      ->where('published_at', '<=', now());
     }
+
+    public function scopeSearch($query, string $term)
+{
+    // every word must appear somewhere (title, excerpt, body or tags)
+    $words = collect(preg_split('/\s+/', trim($term)))
+        ->map(fn ($w) => str_replace(['%', '_'], '', $w))   // keep wildcards out
+        ->filter()
+        ->take(5);
+
+    foreach ($words as $word) {
+        $like = '%' . $word . '%';
+
+        $query->where(function ($q) use ($like) {
+            $q->where('title', 'like', $like)
+              ->orWhere('excerpt', 'like', $like)
+              ->orWhere('body', 'like', $like)
+              ->orWhere('tags', 'like', $like);
+        });
+    }
+
+    // posts with the whole phrase in the title come first
+    $phrase = '%' . str_replace(['%', '_'], '', trim($term)) . '%';
+
+    return $query->orderByRaw('CASE WHEN title LIKE ? THEN 0 ELSE 1 END', [$phrase]);
+}
 }

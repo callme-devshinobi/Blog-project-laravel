@@ -1391,3 +1391,116 @@
 .main-nav .nav-signup:hover { background: var(--indigo-dark); color: #fff; }
 
 .hint { font-size: 13px; color: #6b7280; margin: 6px 0 0; }
+
+/* ============================================================
+   22. DARK THEME
+   Applied when <html data-theme="dark"> (set by the toggle button)
+============================================================ */
+[data-theme="dark"] {
+  --bg-light:     #11121c;
+  --card:         #1a1b2b;
+  --border:       #2b2d44;
+  --text:         #e8e9f5;
+  --text-muted:   #9b9eb6;
+  --indigo-soft:  rgba(108,99,255,.2);
+  --shadow:       0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  --shadow-hover: 0 4px 8px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5);
+}
+
+/* ---------- Text that was hard-coded for a light background ---------- */
+[data-theme="dark"] .lead { color: #c9cbe0 !important; }
+[data-theme="dark"] .article-body p,
+[data-theme="dark"] .article-body ul,
+[data-theme="dark"] .article-body ol { color: #c9cbe0; }
+[data-theme="dark"] .hint { color: var(--text-muted); }
+[data-theme="dark"] .search-empty a { color: #a5a0ff; }
+[data-theme="dark"] .search-empty a:hover { color: #c4c0ff; }
+
+/* ---------- Pale indigo chips / badges (dark text -> light text) ---------- */
+[data-theme="dark"] .chip,
+[data-theme="dark"] .ic,
+[data-theme="dark"] .callout,
+[data-theme="dark"] .cat-head .count,
+[data-theme="dark"] .create-post .tag-pill,
+[data-theme="dark"] .create-post .tag-pill button { color: #b9b4ff; }
+
+[data-theme="dark"] .create-post { --indigo-soft: rgba(108,99,255,.2); }
+[data-theme="dark"] .drafts-page .dr-badge { background: var(--indigo-soft); color: #b9b4ff; }
+
+/* ---------- Form fields: focus background was hard-coded white ---------- */
+[data-theme="dark"] .field input:focus,
+[data-theme="dark"] .field select:focus,
+[data-theme="dark"] .field textarea:focus,
+[data-theme="dark"] .create-post .field input[type="text"]:focus,
+[data-theme="dark"] .create-post .field select:focus,
+[data-theme="dark"] .create-post .field textarea:focus,
+[data-theme="dark"] .create-post .tags-input:focus-within,
+[data-theme="dark"] .auth-page .input-wrap input:focus { background: var(--card); }
+
+/* ---------- Alerts and danger buttons ---------- */
+[data-theme="dark"] .create-post .alert-success,
+[data-theme="dark"] .drafts-page .dr-alert {
+  background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.35); color: #6ee7b7;
+}
+[data-theme="dark"] .auth-page .alert {
+  background: rgba(220,38,38,.12); border-color: rgba(220,38,38,.4); color: #fca5a5;
+}
+[data-theme="dark"] .create-post .error { color: #f87171; }
+
+[data-theme="dark"] .create-post .btn-danger,
+[data-theme="dark"] .drafts-page .dr-btn-danger { color: #f87171; border-color: rgba(220,38,38,.45); }
+[data-theme="dark"] .create-post .btn-danger:hover,
+[data-theme="dark"] .drafts-page .dr-btn-danger:hover {
+  background: rgba(220,38,38,.12); color: #f87171; border-color: #f87171;
+}
+
+/* ---------- Dashboard ---------- */
+[data-theme="dark"] .dashboard-page {
+  --db-soft: rgba(99,102,241,.2);
+  --db-green: #4ade80;  --db-green-soft: rgba(74,222,128,.15);
+  --db-amber: #fbbf24;  --db-amber-soft: rgba(251,191,36,.15);
+}
+[data-theme="dark"] .dashboard-page .db-welcome {
+  background: linear-gradient(100deg, #23244a 0%, #1c1d3a 55%, #1a1b2f 100%);
+  color: var(--text);
+}
+[data-theme="dark"] .dashboard-page .db-welcome p { color: var(--text-muted); }
+[data-theme="dark"] .dashboard-page .db-avatar { border-color: var(--card); }
+
+/* ---------- Settings page (its colours are defined inline on the page) ---------- */
+[data-theme="dark"] .settings-page {
+  --bg: #11121c;  --surface: #1a1b2b;  --text: #e8e9f5;  --muted: #9b9eb6;  --border: #2b2d44;
+  --danger: #f87171;  --danger-dark: #ef4444;
+  --danger-soft: rgba(220,38,38,.12);  --danger-border: rgba(220,38,38,.4);
+  --green: #4ade80;
+}
+[data-theme="dark"] .settings-page .st-alert-ok {
+  background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.35); color: #86efac;
+}
+[data-theme="dark"] .settings-page .st-input input:focus { background: var(--surface); }
+[data-theme="dark"] .settings-page .st-status-wait { color: #fbbf24; }
+[data-theme="dark"] .settings-page .st-btn-outline { background: transparent; }
+[data-theme="dark"] .settings-page .st-btn-outline:hover { background: #dc2626; border-color: #dc2626; color: #fff; }
+[data-theme="dark"] .settings-page .st-btn-solid { background: #dc2626; border-color: #dc2626; color: #fff; }
+[data-theme="dark"] .settings-page .st-btn-solid:hover { background: #b91c1c; border-color: #b91c1c; }
+
+/* ---------- Profile page (same: colours are defined inline on the page) ---------- */
+[data-theme="dark"] .profile-page {
+  --primary-soft: rgba(99,102,241,.2);
+  --bg: #11121c;  --surface: #1a1b2b;  --text: #e8e9f5;  --muted: #9b9eb6;  --border: #2b2d44;
+}
+[data-theme="dark"] .profile-page .pf-alert-ok {
+  background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.35); color: #86efac;
+}
+[data-theme="dark"] .profile-page .pf-alert-err {
+  background: rgba(220,38,38,.12); border-color: rgba(220,38,38,.4); color: #fca5a5;
+}
+[data-theme="dark"] .profile-page .pf-field input:focus,
+[data-theme="dark"] .profile-page .pf-field textarea:focus,
+[data-theme="dark"] .profile-page .pf-tags:focus-within { background: var(--surface); }
+[data-theme="dark"] .profile-page .pf-pill,
+[data-theme="dark"] .profile-page .pf-pill button,
+[data-theme="dark"] .profile-page .pf-badge { color: #c4c0ff; }
+[data-theme="dark"] .profile-page .pf-remove { background: transparent; color: #f87171; border-color: rgba(220,38,38,.45); }
+[data-theme="dark"] .profile-page .pf-remove:hover { background: rgba(220,38,38,.12); }
+[data-theme="dark"] .profile-page .pf-ghost { background: transparent; }

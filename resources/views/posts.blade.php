@@ -17,10 +17,10 @@
   </section>
 
   <!-- Floating search -->
-  <div class="search-bar">
-    <span class="search-icon">⌕</span>
-    <input type="search" placeholder="Search articles…" aria-label="Search articles" />
-  </div>
+    <form class="search-bar" action="{{ $base }}/search" method="GET" role="search">
+      <span class="search-icon">⌕</span>
+      <input type="search" name="q" placeholder="Search articles…" aria-label="Search articles" maxlength="80" />
+    </form>
 
   <!-- Layout -->
   <div class="layout">

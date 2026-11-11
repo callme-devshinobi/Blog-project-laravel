@@ -284,4 +284,23 @@ class BlogController extends Controller
 
         return back()->with('success', 'Post deleted.');
     }
+
+    // Search the whole site  ( Route: /search )
+public function search(Request $request)
+{
+    $q = mb_substr(trim((string) $request->query('q', '')), 0, 80);
+
+    $results = mb_strlen($q) >= 2
+        ? Post::published()->search($q)
+              ->with(['category', 'user'])
+              ->latest('published_at')
+              ->paginate(10)
+              ->withQueryString()
+        : null;
+
+    return view('search', array_merge(
+        ['q' => $q, 'results' => $results],
+        $this->sidebarData()
+    ));
+}
 }

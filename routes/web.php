@@ -8,6 +8,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use App\Http\Controllers\PostAssistController;
 
 // ---------- Main site ----------
 Route::get('/', [BlogController::class, 'home']);
@@ -15,6 +16,7 @@ Route::get('/posts', [BlogController::class, 'allPosts']);
 Route::get('/categories', [BlogController::class, 'categoryIndex']);
 Route::get('/show/{slug}', [BlogController::class, 'categoryShow']);
 Route::get('/post/{id}', [BlogController::class, 'showPost']);
+Route::get('/search', [BlogController::class, 'search'])->name('search');
 
 Route::get('/about', function () {
     return view('about');
@@ -35,6 +37,7 @@ Route::prefix('@{blog:subdomain}')->group(function () {
     Route::get('/post/{slug}', [PublicBlogController::class, 'post'])->name('blog.post');
     Route::get('/about',       [PublicBlogController::class, 'about'])->name('blog.about');
     Route::get('/contact',     [PublicBlogController::class, 'contact'])->name('blog.contact');
+    Route::get('/search', [PublicBlogController::class, 'search'])->name('blog.search');
 });
 
 // ---------- Auth ----------
@@ -64,6 +67,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/settings/domain', [SettingsController::class, 'saveDomain'])->name('settings.domain');
     Route::post('/settings/domain/verify', [SettingsController::class, 'verifyDomain'])->name('settings.domain.verify');
     Route::delete('/settings/domain', [SettingsController::class, 'removeDomain'])->name('settings.domain.destroy');
+    Route::post('/posts/assist', [PostAssistController::class, 'suggest'])
+    ->middleware('throttle:10,1')      // 10 requests per minute per user
+    ->name('posts.assist');
+    Route::post('/posts/generate', [PostAssistController::class, 'generate'])
+    ->middleware('throttle:5,1')
+    ->name('posts.generate');
 });
 Route::get('/internal/domain-check', function (Request $request) {
     abort_unless($request->ip() === '127.0.0.1', 404);

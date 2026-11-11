@@ -3,6 +3,17 @@
   <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
   <title>{{ $currentBlog ? $currentBlog->title . ' — on DevNotes' : 'DevNotes — Thoughts, tutorials and real-world tech insights' }}</title>
   <!--
     DevNotes blog homepage — pure HTML + CSS (no JavaScript)
@@ -24,6 +35,15 @@
     }
     body.site-body > .site-content { flex: 1 0 auto !important; }
     body.site-body > .site-footer  { flex-shrink: 0 !important; margin-top: 0 !important; }
+
+        /* show the moon in light mode and the sun in dark mode */
+        .icon-sun { display: none; }
+    [data-theme="dark"] .icon-sun  { display: block; }
+    [data-theme="dark"] .icon-moon { display: none; }
+
+    /* dark scrollbars and form controls in dark mode */
+    :root { color-scheme: light; }
+    [data-theme="dark"] { color-scheme: dark; }
   </style>
 </head>
   <body class="site-body">
@@ -61,14 +81,21 @@
       </nav>
 
       <div class="header-actions">
-        <button class="icon-btn" aria-label="Search">
+        <a href="{{ $base }}/search" class="icon-btn" aria-label="Search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/>
           </svg>
-        </button>
-        <button class="icon-btn" aria-label="Toggle dark mode">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        </a>
+        <button type="button" class="icon-btn" id="themeToggle" aria-label="Switch to dark mode" aria-pressed="false">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/>
+            <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+            <line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/>
+            <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+            <line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/>
           </svg>
         </button>
 
@@ -178,6 +205,30 @@
       userMenu.addEventListener('toggle', () => { if (userMenu.open) navToggle.checked = false; });
       navToggle.addEventListener('change', () => { if (navToggle.checked) userMenu.removeAttribute('open'); });
     }
+        // ---------- Light / dark theme ----------
+        const themeToggle = document.getElementById('themeToggle');
+
+function applyTheme(theme, save) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (save) { try { localStorage.setItem('theme', theme); } catch (e) {} }
+  themeToggle.setAttribute('aria-pressed', theme === 'dark');
+  themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+}
+
+// sync the button with the theme the early script chose
+applyTheme(document.documentElement.getAttribute('data-theme') || 'light', false);
+
+themeToggle.addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(next, true);
+});
+
+// if the visitor never chose, follow changes to their system setting
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (err) {}
+  if (!saved) applyTheme(e.matches ? 'dark' : 'light', false);
+});
   </script>
   </body>
   </html>

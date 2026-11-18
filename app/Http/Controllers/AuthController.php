@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -81,12 +82,22 @@ class AuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-
+    
+        // a suspended person with the right password gets a clear message
+        // (someone without the password learns nothing)
+        $existing = User::where('email', $credentials['email'])->first();
+    
+        if ($existing && $existing->suspended_at && Hash::check($credentials['password'], $existing->password)) {
+            return back()
+                ->withErrors(['email' => 'This account has been suspended. Please contact support.'])
+                ->onlyInput('email');
+        }
+    
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'));
         }
-
+    
         return back()
             ->withErrors(['email' => 'These details do not match our records.'])
             ->onlyInput('email');

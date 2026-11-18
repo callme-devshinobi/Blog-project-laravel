@@ -20,5 +20,6 @@ class Blog extends Model
 
     protected $casts = [
         'tech_stack' => 'array',
+        'suspended_at' => 'datetime',
     ];
 }

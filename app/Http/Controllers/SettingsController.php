@@ -8,17 +8,25 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use App\Models\AiCredential;
+use App\Models\ActivityLog;
+use App\Services\UserAiProvider;
 
 class SettingsController extends Controller
 {
     public function edit()
     {
         $user = auth()->user();
-
+    
         return view('settings', [
-            'blog'           => $user->blog,
-            'publishedCount' => $user->posts()->published()->count(),
-            'draftCount'     => $user->posts()->where('status', 'draft')->count(),
+            'blog'            => $user->blog,
+            'publishedCount'  => $user->posts()->published()->count(),
+            'draftCount'      => $user->posts()->where('status', 'draft')->count(),
+            'isPro'           => $user->hasPro(),
+            'subscription'    => $user->activeSubscription(),
+            'credential'      => $user->aiCredential,
+            'providers'       => config('devnotes.ai.providers'),
+            'defaultProvider' => config('devnotes.ai.default_provider'),
         ]);
     }
 
@@ -66,6 +74,9 @@ class SettingsController extends Controller
 
     public function saveDomain(Request $request)
 {
+    if (! $request->user()->hasPro()) {
+        return back()->withErrors(['domain' => 'Custom domains are part of the Pro plan.']);
+    }
     $blog = $request->user()->blog;
     abort_if(! $blog, 403);
 
@@ -105,6 +116,9 @@ class SettingsController extends Controller
 
 public function verifyDomain(Request $request)
 {
+    if (! $request->user()->hasPro()) {
+        return back()->withErrors(['domain' => 'Custom domains are part of the Pro plan.']);
+    }
     $blog = $request->user()->blog;
     abort_if(! $blog || ! $blog->custom_domain, 404);
 
@@ -132,5 +146,55 @@ public function removeDomain(Request $request)
     ])->save();
 
     return back()->with('success', 'Custom domain removed.');
+}
+public function saveAiKey(Request $request)
+{
+    $user = $request->user();
+
+    if (! $user->hasPro()) {
+        return back()->withErrors(['api_key' => 'Connecting your own AI key is part of the Pro plan.']);
+    }
+
+    $data = $request->validate([
+        'provider' => ['required', Rule::in(array_keys(config('devnotes.ai.providers')))],
+        'api_key'  => ['required', 'string', 'min:20', 'max:300', 'regex:/^\S+$/'],
+    ], ['api_key.regex' => 'The key can\'t contain spaces.']);
+
+    $key = $data['api_key'];
+
+    $credential = AiCredential::updateOrCreate(
+        ['user_id' => $user->id],
+        [
+            'provider'        => $data['provider'],
+            'api_key'         => $key,
+            'last_four'       => substr($key, -4),
+            'last_checked_at' => null,
+            'last_check_ok'   => null,
+        ]
+    );
+
+    // try the key once; it stays saved either way
+    $user->setRelation('aiCredential', $credential);
+    $ok = UserAiProvider::test($user);
+    $credential->forceFill(['last_checked_at' => now(), 'last_check_ok' => $ok])->save();
+
+    ActivityLog::record('ai.key_saved', $user->name . ' connected an AI key (' . $data['provider'] . ')', $user);
+
+    if (! $ok) {
+        return back()->withErrors(['api_key' => 'The key was saved, but a test request failed. Check that it belongs to the provider you chose and that billing is enabled with them.']);
+    }
+
+    return back()->with('success', 'Your AI key is connected and working.');
+}
+
+public function removeAiKey(Request $request)
+{
+    $user = $request->user();
+
+    $user->aiCredential?->delete();
+
+    ActivityLog::record('ai.key_removed', $user->name . ' removed their AI key', $user);
+
+    return back()->with('success', 'Your AI key was removed.');
 }
 }

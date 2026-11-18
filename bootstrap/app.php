@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(\App\Http\Middleware\ResolveCustomDomain::class);
+        $middleware->alias(['admin' => \App\Http\Middleware\EnsureAdmin::class]);
+        $middleware->appendToGroup('web', \App\Http\Middleware\EnsureNotSuspended::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

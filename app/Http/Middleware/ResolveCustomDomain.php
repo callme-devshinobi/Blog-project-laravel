@@ -19,11 +19,14 @@ class ResolveCustomDomain
         }
 
         // otherwise the host must be a verified custom domain
-        $blog = Blog::where('custom_domain', $host)
-            ->whereNotNull('custom_domain_verified_at')
-            ->first();
+        $blog = Blog::with('user')
+    ->where('custom_domain', $host)
+    ->whereNotNull('custom_domain_verified_at')
+    ->whereNull('suspended_at')
+    ->first();
 
-        abort_if(! $blog, 404);
+// no blog, or the owner's Pro plan has ended
+abort_if(! $blog || ! $blog->user?->hasPro(), 404);
 
         app()->instance('customDomainBlog', $blog);
 

@@ -112,4 +112,11 @@ public function getUrlAttribute(): string
 
     return $query->orderByRaw('CASE WHEN title LIKE ? THEN 0 ELSE 1 END', [$phrase]);
 }
+
+/** Published posts whose blog is not suspended: what the public may see. */
+public function scopeVisible($query)
+{
+    return $query->published()
+        ->whereHas('blog', fn ($b) => $b->whereNull('suspended_at'));
+}
 }

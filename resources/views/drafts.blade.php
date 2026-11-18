@@ -13,6 +13,9 @@
         @if (session('success'))
           <div class="dr-alert">{{ session('success') }}</div>
         @endif
+        @if ($errors->any())
+        <div class="dr-alert" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c;">{{ $errors->first() }}</div>
+      @endif
   
         @forelse ($drafts as $draft)
           <article class="dr-card">
@@ -23,6 +26,9 @@
                 <p class="dr-excerpt">{{ $draft->excerpt }}</p>
               @endif
               <p class="dr-meta">Saved {{ $draft->created_at->diffForHumans() }} · {{ $draft->read_time }} min read</p>
+              @if ($draft->moderated_at)
+              <p class="dr-meta" style="color:#b45309;font-weight:600;">Unpublished by an admin: {{ $draft->moderation_reason }}. It can't be published again unless an admin restores it.</p>
+            @endif
             </div>
             <div class="dr-actions">
               <button type="button" class="dr-btn" data-preview="{{ $draft->id }}">Preview</button>
@@ -61,11 +67,12 @@
   
     {{-- Each draft's content is stored here (hidden) and copied into the overlay when you click Preview --}}
     @foreach ($drafts as $draft)
-      <div hidden id="draft-{{ $draft->id }}"
-           data-title="{{ $draft->title }}"
-           data-meta="{{ $draft->category->name }} · {{ $draft->read_time }} min read"
-           data-image="{{ $draft->image_url }}">{!! $draft->body !!}</div>
-    @endforeach
+    <div hidden id="draft-{{ $draft->id }}"
+         data-title="{{ $draft->title }}"
+         data-meta="{{ $draft->category->name }} · {{ $draft->read_time }} min read"
+         data-image="{{ $draft->image_url }}"
+         data-moderated="{{ $draft->moderated_at ? '1' : '0' }}">{!! $draft->body !!}</div>
+  @endforeach
   
     {{-- The overlay --}}
     <div class="dr-modal" id="drModal">
@@ -91,7 +98,7 @@
       const form   = document.getElementById('drForm');
       // Laravel builds the URL; we swap __ID__ for the real draft id
       const publishUrl = "{{ route('posts.publish', '__ID__') }}";
-  
+
       function openPreview(id) {
         const src = document.getElementById('draft-' + id);
         document.getElementById('drTitle').textContent = src.dataset.title;
@@ -99,6 +106,8 @@
         document.getElementById('drImg').src           = src.dataset.image;
         document.getElementById('drBody').innerHTML    = src.innerHTML;
         form.action = publishUrl.replace('__ID__', id);
+        // drafts an admin removed can't be published, so hide the button for them
+        form.style.display = src.dataset.moderated === '1' ? 'none' : '';
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';   // stop the page scrolling behind
       }
@@ -106,7 +115,7 @@
         modal.classList.remove('open');
         document.body.style.overflow = '';
       }
-  
+
       document.querySelectorAll('[data-preview]').forEach(btn => {
         btn.addEventListener('click', () => openPreview(btn.dataset.preview));
       });

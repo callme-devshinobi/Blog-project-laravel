@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class PublicBlogController extends Controller
 {
+    /** A suspended blog is hidden from everyone except admins, who can preview it. */
+    private function guard(Blog $blog): void
+    {
+        abort_if($blog->suspended_at && ! auth()->user()?->is_admin, 404);
+    }
+
     // Sidebar data, limited to this blog's posts
     private function sidebarData(Blog $blog)
     {
@@ -24,6 +30,7 @@ class PublicBlogController extends Controller
     public function index()
     {
         $blogs = Blog::with('user')
+            ->whereNull('suspended_at')
             ->whereHas('posts', fn ($q) => $q->published())
             ->withCount(['posts as published_count' => fn ($q) => $q->published()])
             ->latest()
@@ -35,6 +42,8 @@ class PublicBlogController extends Controller
     // Blog home  ( /@name )
     public function show(Blog $blog)
     {
+        $this->guard($blog);
+
         $pagedPosts = $blog->posts()->published()
             ->with(['category', 'user'])
             ->latest('published_at')
@@ -49,6 +58,8 @@ class PublicBlogController extends Controller
     // All posts  ( /@name/posts )
     public function allPosts(Blog $blog)
     {
+        $this->guard($blog);
+
         $pagedPosts = $blog->posts()->published()
             ->with(['category', 'user'])
             ->latest('published_at')
@@ -63,6 +74,8 @@ class PublicBlogController extends Controller
     // Categories  ( /@name/categories )
     public function categoryIndex(Blog $blog)
     {
+        $this->guard($blog);
+
         $recommendedPost = $blog->posts()->published()->oldest('published_at')->first();
 
         // Date of the blogger's most recently updated published post
@@ -81,6 +94,8 @@ class PublicBlogController extends Controller
     // This blogger's posts in one category  ( /@name/show/{slug} )
     public function categoryShow(Blog $blog, $slug)
     {
+        $this->guard($blog);
+
         $category = Category::where('slug', $slug)->firstOrFail();
 
         $post_lists = $blog->posts()->published()
@@ -110,6 +125,8 @@ class PublicBlogController extends Controller
     // One post, only from this blog  ( /@name/post/{slug} )
     public function post(Blog $blog, $slug)
     {
+        $this->guard($blog);
+
         $post = $blog->posts()->published()
             ->where('slug', $slug)
             ->with(['category', 'user'])
@@ -135,38 +152,47 @@ class PublicBlogController extends Controller
         ));
     }
 
+    // About  ( /@name/about )
     public function about(Blog $blog)
-{
-    return view('about', [
-        'blog'          => $blog,
-        'postCount'     => $blog->posts()->published()->count(),
-        'categoryCount' => $blog->posts()->published()->distinct()->count('category_id'),
-        'since'         => $blog->created_at->year,
-        'topics'        => Category::whereHas('posts', fn ($q) => $q->published()->where('blog_id', $blog->id))->orderBy('name')->pluck('name'),
-    ]);
-}
+    {
+        $this->guard($blog);
 
+        return view('about', [
+            'blog'          => $blog,
+            'postCount'     => $blog->posts()->published()->count(),
+            'categoryCount' => $blog->posts()->published()->distinct()->count('category_id'),
+            'since'         => $blog->created_at->year,
+            'topics'        => Category::whereHas('posts', fn ($q) => $q->published()->where('blog_id', $blog->id))
+                                    ->orderBy('name')->pluck('name'),
+        ]);
+    }
+
+    // Contact  ( /@name/contact )
     public function contact(Blog $blog)
     {
+        $this->guard($blog);
+
         return view('contact', ['blog' => $blog]);
     }
 
     // Search inside one blog  ( /@name/search )
-public function search(Blog $blog, Request $request)
-{
-    $q = mb_substr(trim((string) $request->query('q', '')), 0, 80);
+    public function search(Blog $blog, Request $request)
+    {
+        $this->guard($blog);
 
-    $results = mb_strlen($q) >= 2
-        ? $blog->posts()->published()->search($q)
-              ->with(['category', 'user'])
-              ->latest('published_at')
-              ->paginate(10)
-              ->withQueryString()
-        : null;
+        $q = mb_substr(trim((string) $request->query('q', '')), 0, 80);
 
-    return view('search', array_merge(
-        ['blog' => $blog, 'q' => $q, 'results' => $results],
-        $this->sidebarData($blog)
-    ));
-}
+        $results = mb_strlen($q) >= 2
+            ? $blog->posts()->published()->search($q)
+                  ->with(['category', 'user'])
+                  ->latest('published_at')
+                  ->paginate(10)
+                  ->withQueryString()
+            : null;
+
+        return view('search', array_merge(
+            ['blog' => $blog, 'q' => $q, 'results' => $results],
+            $this->sidebarData($blog)
+        ));
+    }
 }

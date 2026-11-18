@@ -41,7 +41,16 @@
               <b>{{ auth()->user()->name }}</b>
             </div>
           </div>
-
+          @if (auth()->user()->blog?->suspended_at)
+            <div class="adm-banner" role="alert">
+              <b>Your blog is suspended.</b>
+              Your blog and its posts are hidden from readers and you can't publish new posts.
+              @if (auth()->user()->blog->suspended_reason)
+                Reason: {{ auth()->user()->blog->suspended_reason }}.
+              @endif
+              If you think this is a mistake, please contact support.
+            </div>
+          @endif
           {{ $slot }}
 
         </main>

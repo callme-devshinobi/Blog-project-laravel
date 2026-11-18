@@ -63,13 +63,16 @@
             @error('body') <p class="error">{{ $message }}</p> @enderror
 
             {{-- AI helper --}}
-            <div class="ai-assist">
-              <button type="button" class="ai-btn" id="genBtn">✍️ Write the article from my title</button>
-              <button type="button" class="ai-btn" id="aiBtn">✨ Suggest excerpt, tags &amp; category</button>
-              <span class="ai-status" id="aiStatus" role="status"></span>
-             
-            </div>
-            <p class="hint">Fills in any of these that are still empty. Your post text is sent to an AI provider to do this, so please review the suggestions before saving.</p>
+            @if (auth()->user()->canUseAi())
+              <div class="ai-assist">
+                <button type="button" class="ai-btn" id="genBtn">✍️ Write the article from my title</button>
+                <button type="button" class="ai-btn" id="aiBtn">✨ Suggest excerpt, tags &amp; category</button>
+                <span class="ai-status" id="aiStatus" role="status"></span>
+              </div>
+              <p class="hint">Fills in any of these that are still empty. Your post text is sent to the AI provider you connected, so please review the suggestions before saving.</p>
+            @else
+              <p class="hint">✨ <a href="{{ route('settings') }}" style="color:var(--indigo);font-weight:600;">Connect your own AI key</a> (Pro plan) to get excerpt, tag and article help here.</p>
+            @endif
           </div>
         </div>
 
@@ -244,6 +247,7 @@
       document.querySelectorAll('input[name="status"]').forEach(r => r.addEventListener('change', updateButton));
       updateButton();
 
+      @if (auth()->user()->canUseAi())
       // ---------- AI suggestions (excerpt, tags, category) ----------
       const aiBtn    = document.getElementById('aiBtn');
       const aiStatus = document.getElementById('aiStatus');
@@ -379,7 +383,7 @@ genBtn.addEventListener('click', async () => {
     genBtn.disabled = false;
     aiBtn.disabled = false;
   }
-});
+});      @endif
     </script>
 
   </div>

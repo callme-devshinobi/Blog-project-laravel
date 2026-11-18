@@ -30,6 +30,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin'     => 'boolean',
+            'suspended_at' => 'datetime',
         ];
     }
 
@@ -70,6 +72,34 @@ public function getAvatarUrlAttribute(): ?string
     return $this->avatar
         ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->avatar)
         : null;
+}
+
+public function subscriptions()
+{
+    return $this->hasMany(\App\Models\Subscription::class);
+}
+
+public function aiCredential()
+{
+    return $this->hasOne(\App\Models\AiCredential::class);
+}
+
+/** The subscription that currently gives this person Pro, if any. */
+public function activeSubscription(): ?\App\Models\Subscription
+{
+    return $this->subscriptions()->latest('id')->get()
+        ->first(fn ($s) => $s->grantsAccess());
+}
+
+/** Pro access: a live subscription, or an admin account. */
+public function hasPro(): bool
+{
+    return (bool) $this->is_admin || $this->activeSubscription() !== null;
+}
+
+public function canUseAi(): bool
+{
+    return $this->hasPro() && $this->aiCredential !== null;
 }
 
 }

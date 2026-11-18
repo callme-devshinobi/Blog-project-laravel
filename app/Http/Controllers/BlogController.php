@@ -23,7 +23,7 @@ class BlogController extends Controller
                 $query->published();
             }])->orderBy('id')->get(),
 
-            'popularPosts' => Post::published()->latest('published_at')->take(4)->get(),
+            'popularPosts' => Post::visible()->latest('published_at')->take(4)->get(),
         ];
     }
 
@@ -33,7 +33,7 @@ class BlogController extends Controller
     public function home()
     {
         // with() loads each post's category and author in one go (faster)
-        $pagedPosts = Post::published()
+        $pagedPosts = Post::visible()
             ->with(['category', 'user'])
             ->latest('published_at')
             ->paginate(10);
@@ -47,7 +47,7 @@ class BlogController extends Controller
     // All posts page  ( Route: /posts )
     public function allPosts()
     {
-        $pagedPosts = Post::published()
+        $pagedPosts = Post::visible()
             ->with(['category', 'user'])
             ->latest('published_at')
             ->paginate(10);
@@ -62,10 +62,10 @@ class BlogController extends Controller
     public function categoryIndex()
     {
         // A post to recommend from the whole blog
-        $recommendedPost = Post::published()->oldest('published_at')->first();
+        $recommendedPost = Post::visible()->oldest('published_at')->first();
 
         // Date of the most recently updated published post, site-wide
-        $lastUpdated = Post::published()->latest('updated_at')->value('updated_at');
+        $lastUpdated = Post::visible()->latest('updated_at')->value('updated_at');
 
         return view('categories.index', array_merge(
             [
@@ -110,17 +110,17 @@ class BlogController extends Controller
     public function showPost($id)
     {
         // Find the post, or show a 404 page
-        $post = Post::published()
+        $post = Post::visible()
             ->with(['category', 'user'])
             ->findOrFail($id);
 
         // The next older and next newer posts, by publish date
-        $previousPost = Post::published()
+        $previousPost = Post::visible()
             ->where('published_at', '<', $post->published_at)
             ->latest('published_at')
             ->first();
 
-        $nextPost = Post::published()
+        $nextPost = Post::visible()
             ->where('published_at', '>', $post->published_at)
             ->oldest('published_at')
             ->first();
@@ -150,6 +150,8 @@ class BlogController extends Controller
         // 0. Every post belongs to the author's blog
         $blog = auth()->user()->blog;
         abort_if(! $blog, 403, 'You need a blog before you can post.');
+
+        abort_if($blog->suspended_at, 403, 'Your blog is suspended, so you can\'t publish new posts.');
 
         // 1. Check the form. If anything is wrong, Laravel sends the visitor back
         //    to the form with error messages and keeps what they typed.
@@ -250,6 +252,15 @@ class BlogController extends Controller
         // only MY drafts can be published
         $post = auth()->user()->posts()->where('status', 'draft')->findOrFail($id);
 
+        // an admin removed this post, so the owner can't publish it again on their own
+        if ($post->moderated_at) {
+            return back()->withErrors([
+                'publish' => 'An admin unpublished this post'
+                    . ($post->moderation_reason ? ': ' . $post->moderation_reason : '')
+                    . '. It can\'t be published again unless an admin restores it.',
+            ]);
+        }
+
         $post->update([
             'status'       => 'published',
             'published_at' => now(),
@@ -291,7 +302,7 @@ public function search(Request $request)
     $q = mb_substr(trim((string) $request->query('q', '')), 0, 80);
 
     $results = mb_strlen($q) >= 2
-        ? Post::published()->search($q)
+        ? Post::visible()->search($q)
               ->with(['category', 'user'])
               ->latest('published_at')
               ->paginate(10)

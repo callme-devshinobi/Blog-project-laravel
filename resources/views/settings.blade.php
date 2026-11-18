@@ -95,6 +95,13 @@
 .st-dns table { width: 100%; border-collapse: collapse; margin: 10px 0; }
 .st-dns th, .st-dns td { text-align: left; padding: 6px 12px 6px 0; vertical-align: top; word-break: break-all; font-family: monospace; font-size: 12.5px; }
 .st-dns small { display: block; font-family: inherit; color: var(--muted); }
+.st-input select { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px;
+           font-family: inherit; font-size: 14.5px; color: var(--text); background: var(--bg); }
+.st-input select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79,70,229,.12); }
+.st-pro { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; background: var(--primary); color: #fff;
+          padding: 2px 8px; border-radius: 999px; vertical-align: middle; margin-left: 6px; }
+.st-lock { background: var(--bg); border: 1px dashed var(--border); border-radius: 10px; padding: 14px 16px;
+           font-size: 14px; color: var(--muted); }
 </style>
 
 <div class="st-wrap">
@@ -159,84 +166,191 @@
   </section>
 
   <!-- Blog address -->
-   <!-- Blog address + custom domain -->
-   @if ($blog)
-   <section class="st-panel">
-     <div class="st-title">🌐 Your blog address</div>
-     <p class="st-desc">This is where readers find your blog. Share it anywhere.</p>
+  <!-- Plan -->
+  <section class="st-panel">
+    <div class="st-title">⭐ Your plan</div>
 
-     <div class="st-address">
-       <div class="st-input">
-         <span class="st-lead">🌐</span>
-         <input type="text" id="blogUrl" value="{{ url('/@' . $blog->subdomain) }}" readonly>
-       </div>
-       <button type="button" class="st-btn" id="copyUrl">Copy link</button>
-     </div>
-   </section>
+    @if ($isPro)
+      <p class="st-desc" style="margin-bottom:0;">
+        <b>Pro is active.</b>
+        @if ($subscription?->current_period_end)
+          {{ $subscription->cancel_at_period_end || $subscription->status === 'canceled' ? 'Your access ends' : 'Next renewal' }}
+          on {{ $subscription->current_period_end->format('M j, Y') }}.
+        @elseif (! $subscription)
+          This account has Pro access as an administrator.
+        @endif
+      </p>
+      @if (Route::has('billing'))
+        <a href="{{ route('billing') }}" class="st-btn" style="display:inline-block;text-decoration:none;margin-top:16px;">Manage billing</a>
+      @endif
+    @else
+      <p class="st-desc">Pro lets you use your own domain for your blog, and connect your own AI key for writing help.
+        <b>{{ config('devnotes.billing.price_label') }}</b></p>
+      @if (Route::has('billing'))
+        <a href="{{ route('billing') }}" class="st-btn" style="display:inline-block;text-decoration:none;">Upgrade to Pro</a>
+      @else
+        <p class="st-hint">Online checkout opens soon.</p>
+      @endif
+    @endif
+  </section>
 
-   <section class="st-panel">
-     <div class="st-title">🔗 Custom domain</div>
-     <p class="st-desc">Use a domain you own, like <b>myblog.com</b>, so readers see your blog there.</p>
+  @if ($blog)
+    <!-- Blog address -->
+    <section class="st-panel">
+      <div class="st-title">🌐 Your blog address</div>
+      <p class="st-desc">This is where readers find your blog. Share it anywhere.</p>
 
-     @if ($blog->custom_domain && $blog->custom_domain_verified_at)
-       <div class="st-status st-status-ok">✓ Active: <a href="https://{{ $blog->custom_domain }}" target="_blank" rel="noopener">{{ $blog->custom_domain }}</a></div>
-     @elseif ($blog->custom_domain)
-       <div class="st-status st-status-wait">⏳ Waiting for DNS verification: <b>{{ $blog->custom_domain }}</b></div>
-     @endif
+      <div class="st-address">
+        <div class="st-input">
+          <span class="st-lead">🌐</span>
+          <input type="text" id="blogUrl" value="{{ url('/@' . $blog->subdomain) }}" readonly>
+        </div>
+        <button type="button" class="st-btn" id="copyUrl">Copy link</button>
+      </div>
+    </section>
 
-     <form action="{{ route('settings.domain') }}" method="POST">
-       @csrf
-       @method('PUT')
-       <div class="st-address">
-         <div class="st-input">
-           <span class="st-lead">🔗</span>
-           <input type="text" name="domain" value="{{ old('domain', $blog->custom_domain) }}" placeholder="myblog.com" autocomplete="off">
-         </div>
-         <button type="submit" class="st-btn">Save domain</button>
-       </div>
-       <p class="st-hint">Changing the domain means verifying it again.</p>
-     </form>
+    <!-- Custom domain -->
+    <section class="st-panel">
+      <div class="st-title">🔗 Custom domain <span class="st-pro">PRO</span></div>
+      <p class="st-desc">Use a domain you own, like <b>myblog.com</b>, so readers see your blog there.</p>
 
-     @if ($blog->custom_domain && ! $blog->custom_domain_verified_at)
-       <div class="st-dns">
-         <b>Add these records where you bought your domain:</b>
-         <table>
-           <tr><th>Type</th><th>Name</th><th>Value</th></tr>
-           <tr>
-             <td>TXT</td>
-             <td>_devnotes-verify.{{ $blog->custom_domain }}</td>
-             <td>{{ $blog->domain_token }}</td>
-           </tr>
-           <tr>
-             <td>CNAME</td>
-             <td>{{ $blog->custom_domain }} <small>(use for www.example.com or blog.example.com)</small></td>
-             <td>{{ config('devnotes.domain_target') }}</td>
-           </tr>
-           <tr>
-             <td>A</td>
-             <td>{{ $blog->custom_domain }} <small>(use instead of CNAME for a root domain like example.com)</small></td>
-             <td>{{ config('devnotes.server_ip') ?: 'your server IP address' }}</td>
-           </tr>
-         </table>
-         <small>The TXT record proves you own the domain. The CNAME or A record sends visitors to DevNotes. Some providers want only the part before your root domain in the Name column. DNS changes can take from a few minutes to 48 hours.</small>
-       </div>
+      @if (! $isPro)
+        <div class="st-lock">
+          🔒 Custom domains are part of the Pro plan.
+          @if ($blog->custom_domain)
+            Your domain <b>{{ $blog->custom_domain }}</b> is switched off until you renew.
+          @endif
+        </div>
 
-       <form action="{{ route('settings.domain.verify') }}" method="POST" style="margin-top:16px;">
-         @csrf
-         <button type="submit" class="st-btn">Verify domain</button>
-       </form>
-     @endif
+        @if ($blog->custom_domain)
+          <form action="{{ route('settings.domain.destroy') }}" method="POST" style="margin-top:16px;"
+                onsubmit="return confirm('Remove this custom domain?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="st-btn-outline">Remove domain</button>
+          </form>
+        @endif
+      @else
 
-     @if ($blog->custom_domain)
-       <form action="{{ route('settings.domain.destroy') }}" method="POST" style="margin-top:16px;"
-             onsubmit="return confirm('Remove this custom domain? Your blog stays available at its DevNotes address.')">
-         @csrf
-         @method('DELETE')
-         <button type="submit" class="st-btn-outline">Remove domain</button>
-       </form>
-     @endif
-   </section>
- @endif
+        @if ($blog->custom_domain && $blog->custom_domain_verified_at)
+          <div class="st-status st-status-ok">✓ Active: <a href="https://{{ $blog->custom_domain }}" target="_blank" rel="noopener">{{ $blog->custom_domain }}</a></div>
+        @elseif ($blog->custom_domain)
+          <div class="st-status st-status-wait">⏳ Waiting for DNS verification: <b>{{ $blog->custom_domain }}</b></div>
+        @endif
+
+        <form action="{{ route('settings.domain') }}" method="POST">
+          @csrf
+          @method('PUT')
+          <div class="st-address">
+            <div class="st-input">
+              <span class="st-lead">🔗</span>
+              <input type="text" name="domain" value="{{ old('domain', $blog->custom_domain) }}" placeholder="myblog.com" autocomplete="off">
+            </div>
+            <button type="submit" class="st-btn">Save domain</button>
+          </div>
+          <p class="st-hint">Changing the domain means verifying it again.</p>
+        </form>
+
+        @if ($blog->custom_domain && ! $blog->custom_domain_verified_at)
+          <div class="st-dns">
+            <b>Add these records where you bought your domain:</b>
+            <table>
+              <tr><th>Type</th><th>Name</th><th>Value</th></tr>
+              <tr>
+                <td>TXT</td>
+                <td>_devnotes-verify.{{ $blog->custom_domain }}</td>
+                <td>{{ $blog->domain_token }}</td>
+              </tr>
+              <tr>
+                <td>CNAME</td>
+                <td>{{ $blog->custom_domain }} <small>(use for www.example.com or blog.example.com)</small></td>
+                <td>{{ config('devnotes.domain_target') }}</td>
+              </tr>
+              <tr>
+                <td>A</td>
+                <td>{{ $blog->custom_domain }} <small>(use instead of CNAME for a root domain like example.com)</small></td>
+                <td>{{ config('devnotes.server_ip') ?: 'your server IP address' }}</td>
+              </tr>
+            </table>
+            <small>The TXT record proves you own the domain. The CNAME or A record sends visitors to DevNotes. Some providers want only the part before your root domain in the Name column. DNS changes can take from a few minutes to 48 hours.</small>
+          </div>
+
+          <form action="{{ route('settings.domain.verify') }}" method="POST" style="margin-top:16px;">
+            @csrf
+            <button type="submit" class="st-btn">Verify domain</button>
+          </form>
+        @endif
+
+        @if ($blog->custom_domain)
+          <form action="{{ route('settings.domain.destroy') }}" method="POST" style="margin-top:16px;"
+                onsubmit="return confirm('Remove this custom domain? Your blog stays available at its DevNotes address.')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="st-btn-outline">Remove domain</button>
+          </form>
+        @endif
+
+      @endif
+    </section>
+  @endif
+
+  <!-- AI writing assistant -->
+  <section class="st-panel">
+    <div class="st-title">🤖 AI writing assistant <span class="st-pro">PRO</span></div>
+    <p class="st-desc">Connect your own AI account to get help with excerpts, tags and first drafts while you write.
+      Your key is stored encrypted and is only used when you click an AI button. You pay your AI provider directly for the usage.</p>
+
+    @if (! $isPro)
+      <div class="st-lock">🔒 Connecting your own AI key is part of the Pro plan.</div>
+    @else
+
+      @if ($credential)
+        <div class="st-status st-status-ok">
+          ✓ Connected: {{ $providers[$credential->provider]['label'] ?? $credential->provider }} · key ending in {{ $credential->last_four }}
+          @if ($credential->last_check_ok === false) · <span style="color:#dc2626;">last test failed</span>@endif
+        </div>
+      @endif
+
+      <form action="{{ route('settings.ai') }}" method="POST" autocomplete="off">
+        @csrf
+        @method('PUT')
+
+        <div class="st-field">
+          <label for="ai_provider">Provider</label>
+          <div class="st-input">
+            <select id="ai_provider" name="provider">
+              @foreach ($providers as $id => $p)
+                <option value="{{ $id }}" data-hint="{{ $p['hint'] }}" data-url="{{ $p['url'] }}"
+                        @selected(old('provider', $credential->provider ?? $defaultProvider) === $id)>{{ $p['label'] }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="st-field">
+          <label for="ai_key">{{ $credential ? 'Replace your key' : 'API key' }}</label>
+          <div class="st-input">
+            <span class="st-lead">🔑</span>
+            <input type="password" id="ai_key" name="api_key" placeholder="Paste your key here" autocomplete="new-password" required>
+            <button type="button" class="st-toggle" data-target="ai_key" aria-label="Show key">👁</button>
+          </div>
+          <p class="st-hint"><span id="aiHint"></span> <a id="aiLink" href="#" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:600;">Get a key →</a></p>
+        </div>
+
+        <button type="submit" class="st-btn">{{ $credential ? 'Replace key' : 'Save and test key' }}</button>
+      </form>
+
+      @if ($credential)
+        <form action="{{ route('settings.ai.destroy') }}" method="POST" style="margin-top:16px;"
+              onsubmit="return confirm('Remove your AI key?')">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="st-btn-outline">Remove key</button>
+        </form>
+      @endif
+
+    @endif
+  </section>
 
   <!-- Danger zone -->
   <section class="st-dz">
@@ -339,6 +453,19 @@
   phrase.addEventListener('input', () => {
     confirmBtn.disabled = phrase.value !== 'delete my account';
   });
+    // AI provider: show the right hint and link
+    const aiProvider = document.getElementById('ai_provider');
+  if (aiProvider) {
+    const aiHint = document.getElementById('aiHint');
+    const aiLink = document.getElementById('aiLink');
+    function syncProvider() {
+      const opt = aiProvider.options[aiProvider.selectedIndex];
+      aiHint.textContent = opt.dataset.hint || '';
+      aiLink.href = opt.dataset.url || '#';
+    }
+    aiProvider.addEventListener('change', syncProvider);
+    syncProvider();
+  }
 </script>
 
 </div>

@@ -108,6 +108,9 @@
           <details class="user-menu" id="userMenu">
             <summary>Hi, <span class="user-name">{{ explode(' ', auth()->user()->name)[0] }}</span></summary>
             <div class="user-dropdown">
+              @if (auth()->user()->is_admin)
+              <a href="{{ route('admin.dashboard') }}">🛡️ Admin</a>
+            @endif
               <a href="{{ route('dashboard') }}">🏠 Dashboard</a>
               <a href="{{ route('posts.create') }}">✏️ Write a post</a>
               <a href="{{ route('profile') }}">👤 Profile</a>

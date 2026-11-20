@@ -100,6 +100,13 @@ class UserController extends Controller
             ],
             ['confirm.in' => 'Type the account\'s email address exactly to confirm.']
         );
+        try {
+            app(\App\Services\Paystack::class)->cancelAllFor($user);
+        } catch (\Throwable $e) {
+            logger()->warning('Could not cancel a subscription before deleting an account', ['user' => $user->id, 'error' => class_basename($e)]);
+        
+            return back()->withErrors(['password' => 'We couldn\'t cancel your paid subscription, so your account was not deleted. Cancel it from Billing and try again.']);
+        }
 
         $name    = $user->name;
         $isLocal = fn ($path) => $path && ! Str::startsWith($path, ['http://', 'https://']);

@@ -15,8 +15,16 @@ return [
 
     // ---------- Paid plan ----------
     'billing' => [
-        'grace_days'  => (int) env('BILLING_GRACE_DAYS', 3),
-        'price_label' => env('PRO_PRICE_LABEL', 'Pro plan, billed monthly'),   // display only
+        'plan_name'     => 'Pro',
+        'tagline'       => 'Use your own domain and your own AI key.',
+        'features'      => [
+            'Use your own domain for your blog',
+            'Connect your own AI key (Claude, ChatGPT or Gemini) for writing help',
+        ],
+        'grace_days'    => (int) env('BILLING_GRACE_DAYS', 3),
+        'price_ngn'     => (int) env('PRO_PRICE_NGN', 5000),
+        'price_label'   => '₦' . number_format((int) env('PRO_PRICE_NGN', 5000)) . ' per month',
+        'checkout_open' => true,
     ],
 
     // ---------- AI providers writers can connect (Claude is the default) ----------

@@ -5,16 +5,17 @@
         <h3><span class="db-p-icon">🧾</span> Everything that happens in the app</h3>
         <form method="GET" action="{{ route('admin.activity') }}">
           <select name="type" onchange="this.form.submit()" aria-label="Filter by type"
-                  style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-light);color:var(--text);font-family:inherit;">
-            <option value="">All activity</option>
-            <option value="auth"  @selected($type === 'auth')>Sign-ins</option>
-            <option value="post"  @selected($type === 'post')>Posts</option>
-            <option value="blog"  @selected($type === 'blog')>Blogs</option>
-            <option value="user"  @selected($type === 'user')>Accounts</option>
-            <option value="admin" @selected($type === 'admin')>Admin actions</option>
-            <option value="subscription" @selected($type === 'subscription')>Subscriptions</option>
-            <option value="ai"           @selected($type === 'ai')>AI keys</option>
-          </select>
+          style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-light);color:var(--text);font-family:inherit;">
+    <option value="">All activity</option>
+    <option value="auth"         @selected($type === 'auth')>Sign-ins</option>
+    <option value="post"         @selected($type === 'post')>Posts</option>
+    <option value="blog"         @selected($type === 'blog')>Blogs</option>
+    <option value="user"         @selected($type === 'user')>Accounts</option>
+    <option value="admin"        @selected($type === 'admin')>Admin actions</option>
+    <option value="subscription" @selected($type === 'subscription')>Subscriptions</option>
+    <option value="ai"           @selected($type === 'ai')>AI keys</option>
+    <option value="plan"         @selected($type === 'plan')>Plan &amp; billing</option>
+  </select>
         </form>
       </div>
   

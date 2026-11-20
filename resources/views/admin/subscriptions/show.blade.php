@@ -68,6 +68,18 @@
             <p class="db-empty">Nothing has been recorded for this subscription yet.</p>
           @endforelse
         </section>
+
+        <section class="db-panel" style="margin-top:24px;">
+            <div class="db-panel-head"><h3><span class="db-p-icon">💰</span> Payments from this account</h3></div>
+            @forelse ($payments as $p)
+              <div class="adm-kv">
+                <span>{{ $p->paid_at?->format('M j, Y') ?? $p->created_at->format('M j, Y') }} · {{ ucfirst($p->status) }}</span>
+                <b>{{ $p->formatted_amount }}</b>
+              </div>
+            @empty
+              <p class="db-empty">No payments recorded.</p>
+            @endforelse
+          </section>
       </div>
   
       <aside class="db-right">
@@ -82,7 +94,13 @@
               <input type="number" id="x_days" name="days" class="adm-input" min="1" max="3650" value="30" required>
               <button type="submit" class="adm-btn adm-btn-primary">Extend</button>
             </form>
-  
+            @if ($s->provider === 'paystack' && $s->provider_subscription_id && in_array($s->status, ['active', 'past_due'], true))
+            <form method="POST" action="{{ route('admin.subscriptions.stop', $s) }}"
+                  onsubmit="return confirm('Stop this subscription renewing? They keep Pro until the paid period ends.')">
+              @csrf
+              <button type="submit" class="adm-btn adm-btn-warn">Stop renewal (keep access until period end)</button>
+            </form>
+          @endif
             @if ($s->status !== 'expired')
               <div class="adm-danger-box" style="border-color:#fde68a;">
                 <h4 style="color:#b45309;">End Pro access now</h4>

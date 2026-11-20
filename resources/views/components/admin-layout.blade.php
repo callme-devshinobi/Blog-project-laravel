@@ -15,6 +15,7 @@
             <a href="{{ route('admin.blogs') }}" class="db-link {{ request()->routeIs('admin.blogs*') ? 'active' : '' }}"><span class="db-link-icon">📚</span> Blogs</a>
             <a href="{{ route('admin.posts') }}" class="db-link {{ request()->routeIs('admin.posts*') ? 'active' : '' }}"><span class="db-link-icon">📄</span> Posts</a>
             <a href="{{ route('admin.subscriptions') }}" class="db-link {{ request()->routeIs('admin.subscriptions*') ? 'active' : '' }}"><span class="db-link-icon">💳</span> Subscriptions</a>
+            <a href="{{ route('admin.plan') }}" class="db-link {{ request()->routeIs('admin.plan*') ? 'active' : '' }}"><span class="db-link-icon">🏷️</span> Plan &amp; billing</a>
             <a href="{{ url('/') }}" class="db-link"><span class="db-link-icon">↩️</span> Back to site</a>
             </nav>
 

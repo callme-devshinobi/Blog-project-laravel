@@ -20,6 +20,10 @@
         <span><b>{{ $stats['active'] }}</b><span>Active ({{ $stats['paying'] }} paying, {{ $stats['manual'] }} granted)</span></span>
       </div>
       <div class="db-stat">
+        <span class="db-stat-icon db-si-green">💰</span>
+        <span><b>₦ {{ number_format($stats['revenue_month'] / 100) }}</b><span>This month (₦{{ number_format($stats['revenue_total'] / 100) }} in total)</span></span>
+      </div>
+      <div class="db-stat">
         <span class="db-stat-icon db-si-amber">⏳</span>
         <span><b>{{ $stats['expiring'] }}</b><span>Ending within 7 days</span></span>
       </div>
@@ -106,6 +110,17 @@
             <p>For testing, partners and support cases. Paying customers will appear in this list by themselves once checkout is connected.</p>
           </form>
         </section>
+        <section class="db-panel">
+            <div class="db-panel-head"><h3><span class="db-p-icon">💰</span> Recent payments</h3></div>
+            @forelse ($recentPayments as $p)
+              <div class="adm-kv">
+                <span>{{ $p->user?->name ?? 'Unknown' }} · {{ $p->paid_at?->format('M j') }}</span>
+                <b>{{ $p->formatted_amount }}</b>
+              </div>
+            @empty
+              <p class="db-empty">No payments yet.</p>
+            @endforelse
+          </section>
       </aside>
   
     </div>

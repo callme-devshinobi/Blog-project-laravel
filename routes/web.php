@@ -15,6 +15,10 @@ use App\Http\Controllers\SettingsController;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BillingController;
+use App\Http\Controllers\PaystackWebhookController;
+use App\Http\Controllers\Admin\PlanController as AdminPlanController;
+
 
 // ---------- Main site ----------
 Route::get('/', [BlogController::class, 'home']);
@@ -84,7 +88,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/generate', [PostAssistController::class, 'generate'])
         ->middleware('throttle:5,1')
         ->name('posts.generate');
+
+        Route::get('/billing', [BillingController::class, 'show'])->name('billing');
+        Route::post('/billing/paystack/checkout', [BillingController::class, 'paystackCheckout'])->middleware('throttle:6,1')->name('billing.paystack.checkout');
+        Route::get('/billing/paystack/callback', [BillingController::class, 'paystackCallback'])->name('billing.paystack.callback');
+        Route::post('/billing/paystack/card', [BillingController::class, 'paystackCard'])->name('billing.paystack.card');
+        Route::post('/billing/cancel', [BillingController::class, 'cancel'])->name('billing.cancel');
+        Route::post('/billing/resume', [BillingController::class, 'resume'])->name('billing.resume');
 });
+Route::post('/webhooks/paystack', [PaystackWebhookController::class, 'handle'])->name('webhooks.paystack');
 
 // ---------- Admin area ----------
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -119,7 +131,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/subscriptions/{subscription}/extend', [AdminSubscriptionController::class, 'extend'])->name('subscriptions.extend');
     Route::post('/subscriptions/{subscription}/expire', [AdminSubscriptionController::class, 'expire'])->name('subscriptions.expire');
  
-    
+    Route::post('/subscriptions/{subscription}/stop-renewal', [AdminSubscriptionController::class, 'stopRenewal'])->name('subscriptions.stop');
+
+    Route::get('/plan', [AdminPlanController::class, 'index'])->name('plan');
+    Route::put('/plan', [AdminPlanController::class, 'updateDetails'])->name('plan.update');
+    Route::put('/plan/payments', [AdminPlanController::class, 'updatePayments'])->middleware('throttle:10,1')->name('plan.payments');
+    Route::delete('/plan/payments', [AdminPlanController::class, 'clearPayments'])->middleware('throttle:10,1')->name('plan.payments.clear');
+    Route::post('/plan/check', [AdminPlanController::class, 'check'])->middleware('throttle:10,1')->name('plan.check');
+    Route::post('/plan/create-paystack-plan', [AdminPlanController::class, 'createPaystackPlan'])->middleware('throttle:5,1')->name('plan.create');
 });
 
 // ---------- Used by the web server to decide which domains may get HTTPS certificates ----------

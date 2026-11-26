@@ -14,6 +14,20 @@
       .create-post .ai-status.ok  { color: #16a34a; }
       .create-post .ai-status.err { color: #dc2626; }
       .create-post .ai-status.warn { color: #b45309; }
+
+      .create-post .sp { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
+      .create-post .sp-img {
+        aspect-ratio: 1.91 / 1; display: grid; place-items: center; text-align: center; padding: 10px;
+        background: linear-gradient(135deg, #161b26, #0b0d12) center / cover no-repeat;
+        color: rgba(255,255,255,.55); font-size: 12.5px;
+      }
+      .create-post .sp-body { padding: 12px 14px; }
+      .create-post .sp-body small { color: var(--text-muted); font-size: 12px; }
+      .create-post .sp-body b { display: block; font-size: 15px; line-height: 1.35; margin: 2px 0 4px; }
+      .create-post .sp-body p {
+        font-size: 13px; color: var(--text-muted); margin: 0;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+      }
     </style>
 
     {{-- Hero --}}
@@ -158,6 +172,20 @@
           </div>
         </div>
 
+                {{-- Share preview --}}
+                <div class="card">
+                  <h2>Share preview</h2>
+                  <div class="sp">
+                    <div class="sp-img" id="spImg">No cover yet. The site's default picture will be used.</div>
+                    <div class="sp-body">
+                      <small>{{ parse_url(config('app.url'), PHP_URL_HOST) }}</small>
+                      <b id="spTitle">Your title appears here</b>
+                      <p id="spExcerpt">Your excerpt appears here.</p>
+                    </div>
+                  </div>
+                  <p class="hint" id="spHint">Roughly how a shared link looks. LinkedIn shows the picture and title, but not the excerpt. WhatsApp, Facebook and X show the excerpt too.</p>
+                </div>
+
         {{-- Reading time --}}
         <div class="card">
           <h2>Reading</h2>
@@ -216,16 +244,51 @@
         if (tagsInput.value.trim()) { addTag(tagsInput.value); tagsInput.value = ''; }
       });
 
-      // ---------- Cover image preview ----------
+            // ---------- Share preview ----------
+            const spImg     = document.getElementById('spImg');
+      const spTitle   = document.getElementById('spTitle');
+      const spExcerpt = document.getElementById('spExcerpt');
+      const spHint    = document.getElementById('spHint');
+      const spHintDefault = spHint.textContent;
+
+      function updatePreview() {
+        spTitle.textContent   = document.getElementById('title').value.trim()   || 'Your title appears here';
+        spExcerpt.textContent = document.getElementById('excerpt').value.trim() || 'Your excerpt appears here.';
+      }
+      document.getElementById('title').addEventListener('input', updatePreview);
+      document.getElementById('excerpt').addEventListener('input', updatePreview);
+      setInterval(updatePreview, 700);   // also catches text filled in by the AI buttons
+      updatePreview();
+
+      // ---------- Cover image preview + size check ----------
       const cover = document.getElementById('cover');
       const thumb = document.getElementById('thumb');
       const thumbHint = document.getElementById('thumbHint');
+
       cover.addEventListener('change', () => {
         const file = cover.files[0];
         if (!file) return;
-        thumb.style.backgroundImage = 'url(' + URL.createObjectURL(file) + ')';
+
+        const url = URL.createObjectURL(file);
+        thumb.style.backgroundImage = 'url(' + url + ')';
         thumb.textContent = '';
         thumbHint.textContent = file.name;
+        spImg.style.backgroundImage = 'url(' + url + ')';
+        spImg.textContent = '';
+
+        const probe = new Image();
+        probe.onload = () => {
+          const ratio = probe.width / probe.height;
+
+          if (probe.width < 1200 || probe.height < 627) {
+            spHint.textContent = 'This image is ' + probe.width + '×' + probe.height + '. LinkedIn wants at least 1200×627, so it may look small or blurry when shared.';
+          } else if (ratio < 1.6 || ratio > 2.2) {
+            spHint.textContent = 'This image will be cropped in shared previews, which are wide (about 1.91:1). Keep the important part in the middle.';
+          } else {
+            spHint.textContent = '✓ Good size for shared previews.';
+          }
+        };
+        probe.src = url;
       });
 
       // ---------- Live word count + reading time ----------

@@ -7,6 +7,7 @@
         <a href="/">Home</a><span class="sep">/</span>
         <a href="/show/{{ $post->category->slug }}">{{ $post->category->name }}</a><span class="sep">/</span>
         <span class="current">{{ $post['title'] }}</span>
+        <x-share-buttons :post="$post" />
       </div>
       <span class="post-badge">{{ $post->category->name }}</span>
       <h1>{{ $post['title'] }}</h1>
@@ -40,7 +41,7 @@
         <div class="article-body">
           {!! $post['body'] !!}
         </div>
-
+        <x-share-buttons :post="$post" />
         <!-- Tags -->
         <div class="post-foot">
           <div class="tags">

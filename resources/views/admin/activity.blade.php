@@ -15,6 +15,9 @@
     <option value="subscription" @selected($type === 'subscription')>Subscriptions</option>
     <option value="ai"           @selected($type === 'ai')>AI keys</option>
     <option value="plan"         @selected($type === 'plan')>Plan &amp; billing</option>
+    <option value="site"     @selected($type === 'site')>Site settings</option>
+    <option value="category" @selected($type === 'category')>Categories</option>
+    <option value="pages" @selected($type === 'pages')>Pages</option>
   </select>
         </form>
       </div>

@@ -16,6 +16,9 @@
             <a href="{{ route('admin.posts') }}" class="db-link {{ request()->routeIs('admin.posts*') ? 'active' : '' }}"><span class="db-link-icon">📄</span> Posts</a>
             <a href="{{ route('admin.subscriptions') }}" class="db-link {{ request()->routeIs('admin.subscriptions*') ? 'active' : '' }}"><span class="db-link-icon">💳</span> Subscriptions</a>
             <a href="{{ route('admin.plan') }}" class="db-link {{ request()->routeIs('admin.plan*') ? 'active' : '' }}"><span class="db-link-icon">🏷️</span> Plan &amp; billing</a>
+            <a href="{{ route('admin.general') }}" class="db-link {{ request()->routeIs('admin.general*') ? 'active' : '' }}"><span class="db-link-icon">🎨</span> General settings</a>
+            <a href="{{ route('admin.categories') }}" class="db-link {{ request()->routeIs('admin.categories*') ? 'active' : '' }}"><span class="db-link-icon">🗂️</span> Categories settings</a>
+            <a href="{{ route('admin.pages') }}" class="db-link {{ request()->routeIs('admin.pages*') ? 'active' : '' }}"><span class="db-link-icon">📝</span> Pages</a>
             <a href="{{ url('/') }}" class="db-link"><span class="db-link-icon">↩️</span> Back to site</a>
             </nav>
 

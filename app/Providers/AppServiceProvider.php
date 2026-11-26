@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Load the plan and Paystack settings saved in the admin panel (they override .env)
         \App\Support\PlanSettings::apply();
+        \App\Support\SiteSettings::apply();
         // ---------- Shared view data ----------
         View::composer('*', function ($view) {
             $onCustomDomain = app()->bound('customDomainBlog');

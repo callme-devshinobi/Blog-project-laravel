@@ -11,7 +11,7 @@ class ActivityController extends Controller
     public function index(Request $request)
     {
         $type    = $request->query('type');
-        $allowed = ['auth', 'post', 'blog', 'user', 'admin', 'subscription', 'ai','plan'];
+        $allowed = ['auth', 'post', 'blog', 'user', 'admin', 'subscription', 'ai','plan', 'site', 'category','pages'];
 
         $logs = ActivityLog::with('user')
             ->when(in_array($type, $allowed, true), fn ($q) => $q->where('action', 'like', $type . '.%'))

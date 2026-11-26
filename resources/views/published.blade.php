@@ -25,7 +25,7 @@
             </div>
             <div class="dr-actions">
               <a href="{{ route('blog.post', [$post->blog, $post->slug]) }}" class="dr-btn">View</a>
-
+              <x-share-buttons :post="$post" :compact="true" />
               <form action="{{ route('posts.destroy', $post->id) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to delete this post? This cannot be undone.')">
                 @csrf

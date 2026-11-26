@@ -114,6 +114,8 @@ class BlogController extends Controller
             ->with(['category', 'user'])
             ->findOrFail($id);
 
+            \App\Support\Seo::article($post);
+
         // The next older and next newer posts, by publish date
         $previousPost = Post::visible()
             ->where('published_at', '<', $post->published_at)

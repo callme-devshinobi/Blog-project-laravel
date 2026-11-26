@@ -12,6 +12,8 @@ class PublicBlogController extends Controller
     private function guard(Blog $blog): void
     {
         abort_if($blog->suspended_at && ! auth()->user()?->is_admin, 404);
+
+        \App\Support\Seo::blog($blog); 
     }
 
     // Sidebar data, limited to this blog's posts
@@ -131,6 +133,8 @@ class PublicBlogController extends Controller
             ->where('slug', $slug)
             ->with(['category', 'user'])
             ->firstOrFail();
+
+            \App\Support\Seo::article($post);
 
         $previousPost = $blog->posts()->published()
             ->where('published_at', '<', $post->published_at)

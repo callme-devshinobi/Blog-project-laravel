@@ -7,9 +7,9 @@
       $stack = $currentBlog->tech_stack ?? [];
       $isOwner = auth()->check() && auth()->id() === $currentBlog->user_id;
       $toParagraphs = fn ($text) => preg_split('/\R{2,}/', trim($text ?? ''));
-       // shown when the owner hasn't written a bio yet
-    $defaultAbout = $currentBlog->title . ' is a blog on DevNotes, a platform where developers, creators and curious minds get their own space to write, share and learn in public.';
- 
+  
+      // shown when the owner hasn't written a bio yet
+      $defaultAbout = $currentBlog->title . ' is a blog on ' . config('devnotes.site.name') . ', a platform where developers, creators and curious minds get their own space to write, share and learn in public.';
     @endphp
   
     {{-- ================= Blogger's About page: /@name/about ================= --}}
@@ -31,50 +31,49 @@
     @endif
   
     <!-- Who's behind it -->
-      <!-- Who's behind it -->
-  <section class="section">
-    <div class="two-col">
-      <div>
-        <h2>{{ $currentBlog->bio ? 'About me' : 'About this blog' }}</h2>
-
-        @if ($currentBlog->bio)
-          <p class="lead">{{ $currentBlog->bio }}</p>
-        @else
-          <p class="lead">{{ $defaultAbout }}</p>
-          <p>{{ $owner->name }} is just getting started, so check back soon for tutorials, lessons from real projects, and ideas worth sharing.</p>
-          <p>Every blog on DevNotes belongs to its author: their own posts, their own address, and, if they like, their own domain.</p>
-        @endif
-
-        @if (! empty($stack))
-          <p><b>Tech stack</b></p>
-          <div class="chips">
-            @foreach ($stack as $tag)
-              <span class="chip">{{ $tag }}</span>
-            @endforeach
+    <section class="section">
+      <div class="two-col">
+        <div>
+          <h2>{{ $currentBlog->bio ? 'About me' : 'About this blog' }}</h2>
+  
+          @if ($currentBlog->bio)
+            <p class="lead">{{ $currentBlog->bio }}</p>
+          @else
+            <p class="lead">{{ $defaultAbout }}</p>
+            <p>{{ $owner->name }} is just getting started, so check back soon for tutorials, lessons from real projects, and ideas worth sharing.</p>
+            <p>Every blog on {{ config('devnotes.site.name') }} belongs to its author: their own posts, their own address, and, if they like, their own domain.</p>
+          @endif
+  
+          @if (! empty($stack))
+            <p><b>Tech stack</b></p>
+            <div class="chips">
+              @foreach ($stack as $tag)
+                <span class="chip">{{ $tag }}</span>
+              @endforeach
+            </div>
+          @elseif ($topics->isNotEmpty())
+            <p><b>Topics covered</b></p>
+            <div class="chips">
+              @foreach ($topics as $topic)
+                <span class="chip">{{ $topic }}</span>
+              @endforeach
+            </div>
+          @endif
+        </div>
+  
+        <div class="portrait-card">
+          @if ($owner->avatar_url)
+            <div class="portrait" style="background: center/cover no-repeat url('{{ $owner->avatar_url }}');"></div>
+          @else
+            <div class="portrait" style="display:grid;place-items:center;font-size:56px;font-weight:800;color:#fff;">{{ $owner->initials }}</div>
+          @endif
+          <div class="portrait-meta">
+            <strong>{{ $owner->name }}</strong>
+            <span>Author of {{ $currentBlog->title }}</span>
           </div>
-        @elseif ($topics->isNotEmpty())
-          <p><b>Topics covered</b></p>
-          <div class="chips">
-            @foreach ($topics as $topic)
-              <span class="chip">{{ $topic }}</span>
-            @endforeach
-          </div>
-        @endif
-      </div>
-
-      <div class="portrait-card">
-        @if ($owner->avatar_url)
-          <div class="portrait" style="background: center/cover no-repeat url('{{ $owner->avatar_url }}');"></div>
-        @else
-          <div class="portrait" style="display:grid;place-items:center;font-size:56px;font-weight:800;color:#fff;">{{ $owner->initials }}</div>
-        @endif
-        <div class="portrait-meta">
-          <strong>{{ $owner->name }}</strong>
-          <span>Author of {{ $currentBlog->title }}</span>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   
     <!-- Stats (real numbers from the database) -->
     <section class="section">
@@ -124,97 +123,116 @@
   
   @else
   
-    {{-- ================= Main DevNotes About page: /about ================= --}}
+    {{-- ================= Main site About page: /about (edited in Admin, Pages) ================= --}}
   
-     <!-- Hero -->
+    @php
+      $a        = \App\Support\SiteContent::about();
+      $fill     = fn ($text) => \App\Support\SiteContent::fill($text);
+      $portrait = \App\Support\SiteContent::portraitUrl();
+      $isExt    = fn ($url) => \App\Support\SiteContent::isExternal($url);
+    @endphp
+  
+    <!-- Hero -->
     <section class="page-hero">
-      <p class="eyebrow">About DevNotes</p>
-      <h1>Learn, build and grow — one post at a time.</h1>
-      <p>DevNotes is a blog for developers, creators and curious minds. Here I share practical tutorials, honest lessons from real projects, and the habits that keep me improving.</p>
+      @if ($a['eyebrow'])<p class="eyebrow">{{ $a['eyebrow'] }}</p>@endif
+      <h1>{{ $a['title'] }}</h1>
+      @if ($a['intro'])<p>{{ $a['intro'] }}</p>@endif
     </section>
   
     <!-- Who's behind it -->
     <section class="section">
       <div class="two-col">
         <div>
-          <h2>Hi, I'm Dennis Onwuegbu 👋</h2>
-          <p class="lead">I'm a software developer and writer who believes the best way to learn is to build — and then write about it.</p>
-          <p>I started DevNotes to document my own journey with Laravel, JavaScript and web development, and it quickly grew into a place where beginners and experienced devs alike can find clear, practical guidance.</p>
-          <p>Everything on this blog comes from real projects and real mistakes. No fluff, no gatekeeping — just what actually works.</p>
-          <div class="chips">
-            <span class="chip">Laravel</span>
-            <span class="chip">PHP</span>
-            <span class="chip">JavaScript</span>
-            <span class="chip">CSS</span>
-            <span class="chip">MySQL</span>
-            <span class="chip">HTML</span>
-            <span class="chip">Iconic</span>
+          @if ($a['author_heading'])<h2>{{ $a['author_heading'] }}</h2>@endif
+          @if ($a['lead'])<p class="lead">{{ $a['lead'] }}</p>@endif
   
-          </div>
+          @foreach (\App\Support\SiteContent::paragraphs($a['body']) as $para)
+            <p>{!! nl2br(e($para)) !!}</p>
+          @endforeach
+  
+          @if (! empty($a['chips']))
+            <div class="chips">
+              @foreach ($a['chips'] as $chip)
+                <span class="chip">{{ $chip }}</span>
+              @endforeach
+            </div>
+          @endif
         </div>
+  
         <div class="portrait-card">
-          <div class="portrait"></div>
+          @if ($portrait)
+            <style>.portrait.has-photo::after { display: none; }</style>
+            <div class="portrait has-photo" style="background: center/cover no-repeat url('{{ $portrait }}');"></div>
+          @else
+            <div class="portrait"></div>
+          @endif
           <div class="portrait-meta">
-            <strong>Dennis Onwuegbu</strong>
-            <span>Writer & Developer</span>
+            <strong>{{ $a['portrait_name'] }}</strong>
+            <span>{{ $a['portrait_role'] }}</span>
           </div>
         </div>
       </div>
     </section>
   
     <!-- Stats -->
-    <section class="section">
-      <div class="stats">
-        <div class="stat"><b>40+</b><span>Articles published</span></div>
-        <div class="stat"><b>5</b><span>Categories covered</span></div>
-        <div class="stat"><b>120K</b><span>Monthly readers</span></div>
-        <div class="stat"><b>2024</b><span>DevNotes founded</span></div>
-      </div>
-    </section>
+    @if (! empty($a['stats']))
+      <section class="section">
+        <div class="stats">
+          @foreach ($a['stats'] as $stat)
+            <div class="stat"><b>{{ $fill($stat['value']) }}</b><span>{{ $stat['label'] }}</span></div>
+          @endforeach
+        </div>
+      </section>
+    @endif
   
-    <!-- What you'll find -->
-    <section class="section">
-      <div class="two-col">
-        <div>
-          <h2>What you'll find here</h2>
-          <div class="timeline">
-            <div class="timeline-item">
-              <small>TUTORIALS</small>
-              <h3>Step-by-step guides</h3>
-              <p>From "Getting Started with Laravel" to full project builds — written for humans, not robots.</p>
-            </div>
-            <div class="timeline-item">
-              <small>TOOLS</small>
-              <h3>Essential tools & resources</h3>
-              <p>VS Code extensions, packages and workflows that genuinely make development faster and more enjoyable.</p>
-            </div>
-            <div class="timeline-item">
-              <small>MINDSET</small>
-              <h3>Honest career insights</h3>
-              <p>Habits, lessons and the occasional hard truth about growing as a developer.</p>
-            </div>
+    <!-- What you'll find / Why I write -->
+    @if (! empty($a['find']) || $a['why_body'])
+      <section class="section">
+        <div class="two-col">
+          <div>
+            @if (! empty($a['find']))
+              <h2>{{ $a['find_heading'] }}</h2>
+              <div class="timeline">
+                @foreach ($a['find'] as $item)
+                  <div class="timeline-item">
+                    @if ($item['tag'])<small>{{ $item['tag'] }}</small>@endif
+                    <h3>{{ $item['title'] }}</h3>
+                    @if ($item['text'])<p>{{ $item['text'] }}</p>@endif
+                  </div>
+                @endforeach
+              </div>
+            @endif
+          </div>
+          <div>
+            @if ($a['why_body'])
+              <h2>{{ $a['why_heading'] }}</h2>
+              @foreach (\App\Support\SiteContent::paragraphs($a['why_body']) as $para)
+                <p>{!! nl2br(e($para)) !!}</p>
+              @endforeach
+            @endif
           </div>
         </div>
-        <div>
-          <h2>Why I write</h2>
-          <p>Teaching is the best form of learning. Every tutorial on DevNotes forces me to understand a topic deeply enough to explain it simply.</p>
-          <p>If a post helps one person avoid a bug I spent three hours debugging, it's worth it.</p>
-          <p>New articles drop regularly — subscribe so you never miss one.</p>
-        </div>
-      </div>
-    </section>
+      </section>
+    @endif
   
     <!-- CTA -->
-    <section class="section">
-      <div class="cta">
-        <h2>Let's build something together</h2>
-        <p>Subscribe for new tutorials every week, or reach out if you have a topic you'd love to see covered.</p>
-        <div class="cta-actions">
-          <button class="btn-subscribe">Subscribe to the newsletter</button>
-          <button class="btn-ghost">Get in touch →</button>
+    @if ($a['cta_title'] || $a['cta_text'])
+      <section class="section">
+        <div class="cta">
+          @if ($a['cta_title'])<h2>{{ $a['cta_title'] }}</h2>@endif
+          @if ($a['cta_text'])<p>{{ $a['cta_text'] }}</p>@endif
+  
+          <div class="cta-actions">
+            @if ($a['cta_primary_label'] && $a['cta_primary_url'])
+              <a href="{{ $a['cta_primary_url'] }}" class="btn-subscribe" @if ($isExt($a['cta_primary_url'])) target="_blank" rel="noopener noreferrer" @endif>{{ $a['cta_primary_label'] }}</a>
+            @endif
+            @if ($a['cta_secondary_label'] && $a['cta_secondary_url'])
+              <a href="{{ $a['cta_secondary_url'] }}" class="btn-ghost" @if ($isExt($a['cta_secondary_url'])) target="_blank" rel="noopener noreferrer" @endif>{{ $a['cta_secondary_label'] }}</a>
+            @endif
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    @endif
   
   @endif
   

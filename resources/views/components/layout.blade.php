@@ -14,8 +14,8 @@
       }
     })();
   </script>
-  <title>{{ $currentBlog ? $currentBlog->title . ' — on DevNotes' : 'DevNotes — Thoughts, tutorials and real-world tech insights' }}</title>
-  <!--
+     <title>{{ \App\Support\Seo::pageTitle() }}</title>
+     {!! \App\Support\Seo::tags() !!}  <!--
     DevNotes blog homepage — pure HTML + CSS (no JavaScript)
     Images: royalty-free photos from Pixabay (cdn.pixabay.com)
   -->
@@ -24,6 +24,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ asset('main.css') }}">
   @vite('resources/css/app.css')
+  {!! \App\Support\SiteSettings::css() !!}
   <style>
     /* Sticky footer: the page content stretches, so the footer always sits at the bottom */
     html { height: 100%; }
@@ -58,14 +59,7 @@
   <header class="site-header">
     <div class="container header-inner">
 
-      <a href="{{ $base ?: '/' }}" class="logo">
-        <span class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="8 6 3 12 8 18"/><polyline points="16 6 21 12 16 18"/>
-          </svg>
-        </span>
-        {{ $currentBlog?->title ?? 'DevNotes' }}
-      </a>
+      <a href="{{ $base ?: '/' }}" class="logo"><x-site-logo /></a>
 
       <input type="checkbox" id="nav-toggle" class="nav-toggle">
 
@@ -140,20 +134,13 @@
   <footer class="site-footer">
     <div class="container footer-inner">
 
-      <a href="{{ $base ?: '/' }}" class="logo">
-        <span class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="8 6 3 12 8 18"/><polyline points="16 6 21 12 16 18"/>
-          </svg>
-        </span>
-        {{ $currentBlog?->title ?? 'DevNotes' }}
-      </a>
+      <a href="{{ $base ?: '/' }}" class="logo"><x-site-logo /></a>
 
       @if ($currentBlog)
-        <p class="footer-copy">&copy; {{ date('Y') }} {{ $currentBlog->title }}. Powered by <a href="{{ $mainUrl ?: '/' }}">DevNotes</a>.</p>
-      @else
-        <p class="footer-copy">&copy; {{ date('Y') }} DevNotes. Built with Laravel. <span class="heart">&hearts;</span> by Dennis Onwuegbu</p>
-      @endif
+      <p class="footer-copy">&copy; {{ date('Y') }} {{ $currentBlog->title }}. Powered by <a href="{{ $mainUrl ?: '/' }}">{{ config('devnotes.site.name') }}</a>.</p>
+    @else
+      <p class="footer-copy">&copy; {{ date('Y') }} {{ config('devnotes.site.name') }}. {{ config('devnotes.site.footer') }}</p>
+    @endif
 
       @php
         // On the main site these are placeholders; on a blog they are the blogger's own links

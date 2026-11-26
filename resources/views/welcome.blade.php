@@ -8,15 +8,15 @@
           <h1>Thoughts, tutorials and ideas from {{ $currentBlog->user->name }}.</h1>
           <p class="hero-desc">{{ $currentBlog->bio ?: 'A personal blog on DevNotes. Read, learn and explore, one post at a time.' }}</p>
         @else
-          <p class="hero-eyebrow">Welcome to DevNotes</p>
-          <h1>Thoughts, tutorials and real-world tech insights.</h1>
-          <p class="hero-desc">A blog for developers, creators and curious minds. Learn, build and grow — one post at a time.</p>
+        <p class="hero-eyebrow">{{ config('devnotes.site.hero_eyebrow') }}</p>
+        <h1>{{ config('devnotes.site.hero_title') }}</h1>
+        <p class="hero-desc">{{ config('devnotes.site.hero_desc') }}</p>
         @endif
       </div>
       <figure class="hero-media">
         <!-- Photo: Developer workspace with code — Pixabay -->
-        <img src="https://kimi-web-img.kimi.ai/img/cdn.pixabay.com/4f59813a0eb8024b15572745b58916dc3957b4a1.jpg"
-             alt="Developer workspace with a monitor and laptop showing code">
+        <img src="{{ \App\Support\SiteSettings::heroImageUrl() }}"
+        alt="Hero image">
       </figure>
     </div>
   </section>

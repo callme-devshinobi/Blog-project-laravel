@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\Admin\PlanController as AdminPlanController;
+use App\Http\Controllers\Admin\GeneralController as AdminGeneralController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\PagesController as AdminPagesController;
 
 
 // ---------- Main site ----------
@@ -139,6 +142,26 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/plan/payments', [AdminPlanController::class, 'clearPayments'])->middleware('throttle:10,1')->name('plan.payments.clear');
     Route::post('/plan/check', [AdminPlanController::class, 'check'])->middleware('throttle:10,1')->name('plan.check');
     Route::post('/plan/create-paystack-plan', [AdminPlanController::class, 'createPaystackPlan'])->middleware('throttle:5,1')->name('plan.create');
+
+    Route::get('/general', [AdminGeneralController::class, 'index'])->name('general');
+    Route::put('/general/branding', [AdminGeneralController::class, 'updateBranding'])->name('general.branding');
+    Route::put('/general/colors', [AdminGeneralController::class, 'updateColors'])->name('general.colors');
+    Route::delete('/general/colors', [AdminGeneralController::class, 'resetColors'])->name('general.colors.reset');
+    Route::put('/general/hero', [AdminGeneralController::class, 'updateHero'])->name('general.hero');
+
+    Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories');
+    Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+    Route::put('/categories/{category}', [AdminCategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
+
+    Route::get('/pages', fn () => redirect()->route('admin.pages.about'))->name('pages');
+    Route::get('/pages/about', [AdminPagesController::class, 'about'])->name('pages.about');
+    Route::put('/pages/about', [AdminPagesController::class, 'saveAbout'])->name('pages.about.save');
+    Route::get('/pages/contact', [AdminPagesController::class, 'contact'])->name('pages.contact');
+    Route::put('/pages/contact', [AdminPagesController::class, 'saveContact'])->name('pages.contact.save');
+    Route::get('/pages/faq', [AdminPagesController::class, 'faq'])->name('pages.faq');
+    Route::put('/pages/faq', [AdminPagesController::class, 'saveFaq'])->name('pages.faq.save');
+    Route::delete('/pages/{page}', [AdminPagesController::class, 'reset'])->where('page', 'about|contact|faq')->name('pages.reset');
 });
 
 // ---------- Used by the web server to decide which domains may get HTTPS certificates ----------

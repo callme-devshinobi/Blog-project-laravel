@@ -113,6 +113,14 @@ public function getUrlAttribute(): string
     return $query->orderByRaw('CASE WHEN title LIKE ? THEN 0 ELSE 1 END', [$phrase]);
 }
 
+/** The full public address of the post, the one to share. */
+public function getShareUrlAttribute(): string
+{
+    return $this->blog
+        ? $this->blog->public_base . '/post/' . $this->slug
+        : url('/post/' . $this->id);
+}
+
 /** Published posts whose blog is not suspended: what the public may see. */
 public function scopeVisible($query)
 {
